@@ -211,7 +211,7 @@ export default function App() {
     e.preventDefault();
 
     try {
-      await fetch('http://localhost:8000/api/appointments', {
+      await fetch( 'https://hariharan1217-hopedental-api.hf.space/api/appointments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
