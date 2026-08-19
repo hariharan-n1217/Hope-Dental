@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background-color: #ffffff;
+  color: #0c1d2d;
+  overflow-x: hidden;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+#lik-chat-log::-webkit-scrollbar {
+  width: 5px;
+}
+
+#lik-chat-log::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+#lik-chat-log::-webkit-scrollbar-thumb {
+  background: #0d8a7b;
+  border-radius: 10px;
+}

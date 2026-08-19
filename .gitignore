@@ -1,0 +1,16 @@
+# Environment files & secrets
+*.env
+.env
+backend/atlas-credentials.env
+
+# Database files
+*.db
+backend/hopedental.db
+
+# Dependencies & build
+node_modules/
+frontend/node_modules/
+venv/
+backend/venv/
+__pycache__/
+dist/
