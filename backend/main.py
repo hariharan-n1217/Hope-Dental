@@ -1,20 +1,24 @@
 import os
 import re
 from datetime import datetime, timezone
-from fastapi import FastAPI, status
+from fastapi import FastAPI, status, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
 import pandas as pd
 
-# Load environment variables (.env)
 load_dotenv()
 
 # Import MongoDB collections
-from database import appointments_collection, chat_logs_collection
+try:
+    from database import appointments_collection, chat_logs_collection
+except ImportError:
+    appointments_collection = None
+    chat_logs_collection = None
 
-app = FastAPI(title="Hope Dental API", version="5.0.0")
+app = FastAPI(title="Hope Dental API", version="5.1.0")
 
+# CORS middleware for Vercel & Localhost
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -32,83 +36,59 @@ gemini_client = None
 if GEMINI_KEY:
     try:
         from google import genai
+        from google.genai import types
         gemini_client = genai.Client(api_key=GEMINI_KEY)
-        print("✅ Configured Google Gemini API!")
+        print("Google Gemini Client initialized successfully.")
     except Exception as e:
-        print(f"⚠️ Gemini Init Warning: {e}")
+        print(f"Gemini Init Warning: {e}")
+else:
+    print("Warning: GEMINI_API_KEY is not set.")
 
 # ----------------------------------------------------
-# INSTANT DENTAL KNOWLEDGE BASE (0ms Latency)
+# INSTANT DENTAL KNOWLEDGE BASE (0ms Fallback)
 # ----------------------------------------------------
 FAST_KNOWLEDGE_BASE = [
     {
         "keywords": ["breath", "breeth", "smell", "halitosis", "odor", "mouth smell"],
-        "answer": """
-        <strong>How to Control Bad Breath (Halitosis):</strong><br><br>
-        1. <strong>Brush & Floss Daily:</strong> Clean your teeth twice a day and floss to remove trapped food particles.<br>
-        2. <strong>Clean Your Tongue:</strong> Bacteria on the tongue is a major cause of bad breath. Use a tongue scraper daily.<br>
-        3. <strong>Stay Hydrated:</strong> Dry mouth leads to bad breath. Drink plenty of water.<br>
-        4. <strong>Use Mouthwash:</strong> Use an alcohol-free antibacterial mouthwash.<br><br>
-        <em>If bad breath persists, it may indicate deep gum plaque or a cavity. Visit Dr. Sinthu Shanmugavel at Hope Dental for professional scaling!</em>
-        """
+        "answer": "<strong>Managing Bad Breath:</strong><br>1. Brush twice daily and clean your tongue with a scraper.<br>2. Stay hydrated and use antibacterial mouthwash.<br><br><em>Persistent odor indicates plaque build-up. Book a scaling session with Dr. Sinthu Shanmugavel at Hope Dental!</em>"
     },
     {
-        "keywords": ["germ", "germs", "cavity", "decay", "black spot", "hole", "worm"],
-        "answer": """
-        <strong>Dealing with Teeth Germs & Cavities:</strong><br><br>
-        1. <strong>Dental Scaling & Cleaning:</strong> Removes harmful plaque and bacterial tartar build-up.<br>
-        2. <strong>Composite Fillings:</strong> Restores decayed tooth structure before infection reaches the nerve.<br>
-        3. <strong>Fluoride Therapy:</strong> Re-mineralizes weak enamel spots.<br><br>
-        <em>Don't ignore tooth decay! Early treatment prevents the need for a Root Canal. Book an evaluation with Dr. Sinthu Shanmugavel today.</em>
-        """
+        "keywords": ["cavity", "decay", "black spot", "hole", "worm", "germs"],
+        "answer": "<strong>Tooth Decay & Cavities:</strong><br>Early decay is easily fixed with pain-free composite fillings or fluoride sealants before reaching the tooth nerve.<br><br><em>Schedule a visit at Hope Dental before it requires a Root Canal.</em>"
     },
     {
-        "keywords": ["pain", "ache", "sensitiv", "cool", "cold", "hot", "sharp"],
-        "answer": """
-        <strong>Managing Tooth Pain & Sensitivity:</strong><br><br>
-        1. Rinse with warm salt water to reduce inflammation.<br>
-        2. Use a desensitizing toothpaste (potassium nitrate formula).<br>
-        3. Avoid extreme hot or freezing cold food/drinks.<br><br>
-        <em>Persistent or throbbing pain requires immediate examination. Hope Dental offers instant pain-relief consultations!</em>
-        """
+        "keywords": ["pain", "ache", "sensitivity", "sensitiv", "cold", "hot", "sharp"],
+        "answer": "<strong>Tooth Pain & Sensitivity Relief:</strong><br>Rinse with warm salt water and avoid cold drinks. Sharp or throbbing pain requires a quick clinical checkup.<br><br><em>Hope Dental offers instant pain-relief consultations under Dr. Sinthu Shanmugavel (BDS).</em>"
     },
     {
         "keywords": ["hour", "time", "timing", "open", "slot", "schedule", "sunday"],
-        "answer": """
-        <strong>Hope Dental Operating Hours:</strong><br><br>
-        • <strong>Morning Session:</strong> 10:30 AM – 1:30 PM (Mon – Sat)<br>
-        • <strong>Evening Session:</strong> 5:00 PM – 9:00 PM (Mon – Sat)<br>
-        • <strong>Sunday:</strong> On prior request/appointment<br><br>
-        <em>Lead Specialist: Dr. Sinthu Shanmugavel (BDS)</em>
-        """
+        "answer": "<strong>Hope Dental Operating Hours:</strong><br>• <strong>Morning:</strong> 10:30 AM – 1:30 PM (Mon–Sat)<br>• <strong>Evening:</strong> 5:00 PM – 9:00 PM (Mon–Sat)<br>• <strong>Sunday:</strong> Prior appointment only."
     },
     {
         "keywords": ["book", "appointment", "consult", "contact", "phone", "number"],
-        "answer": """
-        <strong>Booking a Consultation at Hope Dental:</strong><br><br>
-        • Click the green <strong>"Book Your Consultation"</strong> button on the website.<br>
-        • Call us directly at <strong>+91 98765 43210</strong>.<br><br>
-        <em>Our clinic receptionist will confirm your morning or evening slot immediately!</em>
-        """
+        "answer": "<strong>Book an Appointment:</strong><br>• Use the <strong>Book Visit</strong> button on this site.<br>• Call / WhatsApp us directly at <strong>+91 9043871809</strong>."
     },
     {
         "keywords": ["rct", "root canal", "nerve"],
-        "answer": """
-        <strong>Root Canal Treatment (RCT) at Hope Dental:</strong><br><br>
-        We perform painless single or multi-visit root canal treatments to rescue infected natural teeth and eliminate throbbing pain.
-        """
-    },
-    {
-        "keywords": ["align", "braces", "invisalign", "crooked", "gap"],
-        "answer": """
-        <strong>Orthodontics & Clear Aligners:</strong><br><br>
-        We offer custom ceramic/metal braces and invisible clear aligners to fix gaps, crowding, and misaligned teeth.
-        """
+        "answer": "<strong>Painless Root Canal Treatment:</strong><br>We perform gentle, single-visit root canal treatments using rotary equipment to eliminate infection and save natural teeth."
     }
 ]
 
+CLINIC_SYSTEM_PROMPT = """
+You are 'LIK', the AI Assistant for Hope Dental Clinic & Kids Hub.
+Lead Dentist: Dr. Sinthu Shanmugavel (BDS).
+Clinic Hours: Morning 10:30 AM - 1:30 PM, Evening 5:00 PM - 9:00 PM (Mon-Sat).
+Phone: +91 9043871809 | Location: Hope Dental Clinic & Kids Hub.
+
+Instructions:
+1. Provide concise, friendly answers (under 3-4 sentences).
+2. Answer in English, or Tamil if asked in Tamil.
+3. Use simple HTML formatting like <strong> and <br>.
+4. Recommend scheduling a visit or contacting +91 9043871809.
+"""
+
 # ----------------------------------------------------
-# SCHEMAS & UTILS
+# SCHEMAS & ENDPOINTS
 # ----------------------------------------------------
 class AppointmentSchema(BaseModel):
     full_name: str
@@ -120,68 +100,75 @@ class AppointmentSchema(BaseModel):
 class ChatQuerySchema(BaseModel):
     query: str
 
-def process_lik_ai(query: str) -> str:
-    q_clean = query.lower().strip()
-
-    # 1. FAST MATCH (Instant < 10ms Response)
-    for entry in FAST_KNOWLEDGE_BASE:
-        if any(re.search(rf"\b{re.escape(k)}", q_clean) for k in entry["keywords"]):
-            return entry["answer"].strip()
-
-    # 2. FALLBACK TO GEMINI FOR COMPLEX QUERIES
-    if gemini_client:
-        system_prompt = """
-        You are LIK, an expert AI Dental Assistant for Hope Dental Clinic (Dr. Sinthu Shanmugavel BDS).
-        Provide a concise, helpful, and friendly answer formatted with clean HTML tags (like <strong>, <br>, <em>).
-        Always maintain a professional tone and encourage visiting Hope Dental for care.
-        """
-        try:
-            response = gemini_client.models.generate_content(
-                model='gemini-2.0-flash',
-                contents=f"{system_prompt}\n\nUser Question: {query}"
-            )
-            return response.text
-        except Exception as e:
-            print(f"❌ Gemini Error: {e}")
-
-    # 3. SAFE GENERAL RESPONSE
-    return """
-    Thank you for asking! For specific guidance regarding your dental health, Dr. Sinthu Shanmugavel (BDS) provides comprehensive consultations at Hope Dental Clinic.<br><br>
-    <em>Click <strong>Book Your Consultation</strong> or call <strong>+91 98765 43210</strong> to schedule a visit!</em>
-    """
-
-# ----------------------------------------------------
-# REST API ENDPOINTS
-# ----------------------------------------------------
 @app.get("/")
 def read_root():
-    return {"message": "Hope Dental FastAPI v5.0 (High-Speed Engine) Online!"}
-
-@app.post("/api/appointments", status_code=status.HTTP_201_CREATED)
-def create_appointment(item: AppointmentSchema):
-    doc = item.model_dump()
-    doc["created_at"] = datetime.now(timezone.utc)
-    result = appointments_collection.insert_one(doc)
-    return {"status": "success", "appointment_id": str(result.inserted_id)}
+    return {"message": "Hope Dental API is running"}
 
 @app.post("/api/chat/lik")
 def lik_chat_endpoint(payload: ChatQuerySchema):
-    bot_reply = process_lik_ai(payload.query)
+    query = payload.query.strip()
+    if not query:
+        raise HTTPException(status_code=400, detail="Query cannot be empty")
     
-    # Save log to MongoDB Atlas
-    try:
-        chat_logs_collection.insert_one({
-            "user_query": payload.query,
-            "bot_response": bot_reply,
-            "timestamp": datetime.now(timezone.utc)
-        })
-    except Exception as e:
-        print(f"MongoDB Log Warning: {e}")
-        
-    return {"reply": bot_reply}
+    q_clean = query.lower()
+
+    # 1. Check Fast Rules
+    for entry in FAST_KNOWLEDGE_BASE:
+        if any(re.search(rf"\b{re.escape(k)}", q_clean) for k in entry["keywords"]):
+            return {"reply": entry["answer"]}
+
+    # 2. Query Gemini AI
+    if gemini_client:
+        try:
+            from google.genai import types
+            response = gemini_client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=query,
+                config=types.GenerateContentConfig(
+                    system_instruction=CLINIC_SYSTEM_PROMPT,
+                    temperature=0.7,
+                    max_output_tokens=250
+                )
+            )
+            if response and response.text:
+                bot_reply = response.text.replace("\n", "<br>")
+                
+                # Async logging to MongoDB if configured
+                if chat_logs_collection is not None:
+                    try:
+                        chat_logs_collection.insert_one({
+                            "user_query": query,
+                            "bot_response": bot_reply,
+                            "timestamp": datetime.now(timezone.utc)
+                        })
+                    except Exception:
+                        pass
+                return {"reply": bot_reply}
+        except Exception as e:
+            print(f"Gemini Call Error: {e}")
+
+    # 3. Final Fallback
+    return {
+        "reply": "Dr. Sinthu Shanmugavel (BDS) provides comprehensive dental checkups at Hope Dental Clinic.<br><br><em>Click <strong>Book Visit</strong> or WhatsApp us at <strong>+91 9043871809</strong> to schedule your slot!</em>"
+    }
+
+@app.post("/api/appointments", status_code=status.HTTP_201_CREATED)
+def create_appointment(item: AppointmentSchema):
+    if appointments_collection is not None:
+        try:
+            doc = item.model_dump()
+            doc["created_at"] = datetime.now(timezone.utc)
+            result = appointments_collection.insert_one(doc)
+            return {"status": "success", "appointment_id": str(result.inserted_id)}
+        except Exception as e:
+            print(f"DB Insert Error: {e}")
+    return {"status": "success", "message": "Appointment request received"}
 
 @app.get("/api/analytics/summary")
 def get_analytics_summary():
+    if appointments_collection is None:
+        return {"total_appointments": 0, "message": "Database not initialized"}
+    
     appointments = list(appointments_collection.find({}, {"_id": 0}))
     if not appointments:
         return {"total_appointments": 0, "message": "No data available yet"}
