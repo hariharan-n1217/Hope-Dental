@@ -18,7 +18,7 @@ import kidTreatmentSpaceMaintainer from './assets/smile-hopedental.jpg';
 import kidTreatmentHabit from './assets/kid2-habit-hopedental.jpg';
 import kidTreatmentPolishing from './assets/polishing-hopedental.jpg';
 
-const API_BASE_URL = "https://hariharan1217-hopedental-api.hf.space";
+const API_BASE_URL = "";
 const CLINIC_WHATSAPP_NUMBER = "9043871809";
 
 export default function App() {
