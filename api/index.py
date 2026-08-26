@@ -16,9 +16,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-GEMINI_KEY = os.getenv("GEMINI_API_KEY")
-gemini_client = genai.Client(api_key=GEMINI_KEY) if GEMINI_KEY else None
-
 FAST_KNOWLEDGE_BASE = [
     {
         "keywords": ["breath", "breeth", "smell", "halitosis", "odor", "mouth smell"],
@@ -65,7 +62,14 @@ class AppointmentSchema(BaseModel):
     session_slot: str
     treatment: str
 
+@app.get("/")
+@app.get("/api")
+def health_check():
+    return {"status": "online", "service": "Hope Dental API"}
+
 @app.post("/api/chat/lik")
+@app.post("/chat/lik")
+@app.post("/lik")
 def lik_chat_endpoint(payload: ChatQuerySchema):
     query = payload.query.strip()
     if not query:
@@ -73,19 +77,23 @@ def lik_chat_endpoint(payload: ChatQuerySchema):
     
     q_clean = query.lower()
 
+    # Fast Knowledge Base Lookup
     for entry in FAST_KNOWLEDGE_BASE:
         if any(re.search(rf"\b{re.escape(k)}", q_clean) for k in entry["keywords"]):
             return {"reply": entry["answer"]}
 
-    if gemini_client:
+    # Dynamic Gemini Call
+    gemini_key = os.getenv("GEMINI_API_KEY")
+    if gemini_key:
         try:
-            response = gemini_client.models.generate_content(
+            client = genai.Client(api_key=gemini_key)
+            response = client.models.generate_content(
                 model="gemini-2.5-flash",
                 contents=query,
                 config=types.GenerateContentConfig(
                     system_instruction=CLINIC_SYSTEM_PROMPT,
                     temperature=0.7,
-                    max_output_tokens=250
+                    max_output_tokens=300
                 )
             )
             if response and response.text:
@@ -98,5 +106,6 @@ def lik_chat_endpoint(payload: ChatQuerySchema):
     }
 
 @app.post("/api/appointments")
+@app.post("/appointments")
 def create_appointment(item: AppointmentSchema):
     return {"status": "success", "message": "Appointment received"}
