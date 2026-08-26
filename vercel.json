@@ -1,4 +1,9 @@
 {
+  "functions": {
+    "api/*.py": {
+      "excludeFiles": "{node_modules/**,frontend/node_modules/**,frontend/dist/**,frontend/src/assets/**}"
+    }
+  },
   "rewrites": [
     {
       "source": "/api/(.*)",

@@ -1,8 +1,4 @@
 fastapi
-uvicorn
-google-genai
 pydantic
-python-dotenv
-pandas
-pymongo
-dnspython
+google-genai
+requests
