@@ -333,11 +333,11 @@ I would like to book an appointment:
               className="flex items-center gap-2 cursor-pointer shrink-0" 
               onClick={() => { setActiveTab('main'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
             >
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-[#0d8a7b] text-white flex items-center justify-center shadow-md shrink-0">
-                <svg className="w-4 h-4 sm:w-6 sm:h-6 fill-current" viewBox="0 0 24 24">
-                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-                </svg>
-              </div>
+              <img 
+                src="/logo.jpeg" 
+                alt="Hope Dental Hub Logo" 
+                className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl object-cover shadow-md shrink-0 border border-slate-200"
+              />
               <div>
                 <span className="hover-glitch-text text-xs sm:text-lg font-black tracking-tight text-[#0c1d2d] hover:text-[#0d8a7b] block leading-none font-mono">
                   HOPE DENTAL
@@ -1097,9 +1097,11 @@ I would like to book an appointment:
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col md:flex-row justify-between items-center gap-5 text-center sm:text-left">
           
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-[#0d8a7b] text-white font-bold flex items-center justify-center text-sm shrink-0">
-              H
-            </div>
+            <img 
+              src="/logo.jpeg" 
+              alt="Hope Dental Hub Logo" 
+              className="w-8 h-8 rounded-xl object-cover border border-slate-700/60"
+            />
             <div>
               <span className="text-sm font-black text-white block">HOPE DENTAL HUB</span>
               <span className="text-[10px] text-slate-400">Dr. Sindhu Shanmugavel (BDS)</span>
@@ -1152,9 +1154,9 @@ I would like to book an appointment:
         </div>
       </button>
 
-      {/* LIK AI CHAT DRAWER */}
+      {/* LIK AI CHAT DRAWER - RESPONSIVE MOBILE VIEWPORT ADAPTIVE */}
       {isLikOpen && (
-        <div className="fixed bottom-16 inset-x-2 sm:inset-auto sm:bottom-20 sm:right-6 z-50 sm:w-88 md:w-96 max-h-[82vh] h-[490px] bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col">
+        <div className="fixed inset-x-2 bottom-2 top-14 sm:top-auto sm:inset-x-auto sm:bottom-20 sm:right-6 z-50 sm:w-88 md:w-96 sm:h-[500px] bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col transition-all">
           {/* Header & Language Selector */}
           <div className="bg-[#0c1d2d] text-white p-3 sm:p-4 flex flex-col gap-2 shrink-0">
             <div className="flex justify-between items-center">
@@ -1169,7 +1171,7 @@ I would like to book an appointment:
               </div>
               <button 
                 onClick={() => setIsLikOpen(false)} 
-                className="text-slate-400 hover:text-white transition-colors p-1 text-sm font-bold"
+                className="text-slate-400 hover:text-white transition-colors p-1.5 text-base font-bold"
               >
                 ✕
               </button>
@@ -1200,7 +1202,7 @@ I would like to book an appointment:
           </div>
 
           {/* Chat Messages */}
-          <div className="flex-1 p-3 sm:p-4 overflow-y-auto space-y-2.5 bg-slate-50 text-xs" id="lik-chat-log">
+          <div className="flex-1 p-3 sm:p-4 overflow-y-auto space-y-2.5 bg-slate-50 text-xs min-h-0" id="lik-chat-log">
             {chatMessages.map((msg, idx) => (
               <div key={idx} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
                 <div 
@@ -1225,7 +1227,7 @@ I would like to book an appointment:
           </div>
 
           {/* Chat Input */}
-          <form onSubmit={handleSendMessage} className="p-2.5 bg-white border-t border-slate-200 flex gap-2 shrink-0">
+          <form onSubmit={handleSendMessage} className="p-2 bg-white border-t border-slate-200 flex gap-2 shrink-0">
             <input 
               type="text" 
               value={queryInput} 
