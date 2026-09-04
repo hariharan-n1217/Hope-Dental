@@ -27,11 +27,30 @@ export default function App() {
   const [isLikOpen, setIsLikOpen] = useState(false);
   const [selectedTreatment, setSelectedTreatment] = useState(null);
   const [isTyping, setIsTyping] = useState(false);
+  const [selectedLang, setSelectedLang] = useState('English');
+
+  // Typewriter effect state for the Hero title
+  const fullHeroTitle = "Welcome to Hope Dental Hub";
+  const [displayedTitle, setDisplayedTitle] = useState("");
+
+  useEffect(() => {
+    let index = 0;
+    setDisplayedTitle("");
+    const timer = setInterval(() => {
+      if (index <= fullHeroTitle.length) {
+        setDisplayedTitle(fullHeroTitle.slice(0, index));
+        index++;
+      } else {
+        clearInterval(timer);
+      }
+    }, 65);
+    return () => clearInterval(timer);
+  }, [activeTab]);
 
   const [chatMessages, setChatMessages] = useState([
     {
       sender: 'bot',
-      text: "Hello! I'm <strong>LIK</strong>, your Hope Dental AI assistant.<br>How can I help you regarding our clinic, pediatric dental care, or Dr. Sinthu Shanmugavel (BDS)?"
+      text: "Hello! I'm <strong>LIK</strong>, your Hope Dental AI assistant.<br>How can I help you regarding our clinic, pediatric dental care, or Dr. Sindhu Shanmugavel (BDS)?"
     }
   ]);
   const [queryInput, setQueryInput] = useState('');
@@ -46,12 +65,11 @@ export default function App() {
 
   const chatEndRef = useRef(null);
 
-  // Automatically scroll to latest chat message
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatMessages, isTyping]);
 
-  // --- GENERAL TREATMENTS DATA ---
+  // --- GENERAL TREATMENTS DATA (Bright Theme with Photos) ---
   const treatmentsData = [
     {
       id: 1,
@@ -135,7 +153,7 @@ export default function App() {
       shortDesc: 'Smile design, aesthetic composite veneers, and laser teeth whitening for radiant smiles.',
       fullDesc: 'Transform discolored, chipped, or uneven teeth with customized porcelain/composite veneers, cosmetic bonding, and fast-acting laser teeth whitening.',
       badge: 'Cosmetic Dentistry',
-      benefits: ['Shade brightening up to 4–8 shades', 'Chip & crack restorative veneers', 'Same-day smile enhancements'],
+      benefits: ['Shade brightening up to 2–4 shades', 'Chip & crack restorative veneers', 'Same-day smile enhancements'],
       sampleImage: imgMakeover,
       icon: (
         <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -230,7 +248,7 @@ export default function App() {
     }
 
     const whatsappMessage = 
-`Hello Hope Dental Clinic! 👋
+`Hello Hope Dental Hub! 👋
 I would like to book an appointment:
 
 👤 *Name:* ${formData.full_name}
@@ -259,7 +277,10 @@ I would like to book an appointment:
       const res = await fetch(`${API_BASE_URL}/api/chat/lik`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: userText })
+        body: JSON.stringify({ 
+          query: userText,
+          language: selectedLang 
+        })
       });
       
       if (!res.ok) throw new Error('Network error');
@@ -272,7 +293,7 @@ I would like to book an appointment:
         ...prev,
         {
           sender: 'bot',
-          text: "Hope Dental provides gentle pediatric & family dental care under Dr. Sinthu Shanmugavel (BDS). <br><br><em>Would you like me to assist you with booking an appointment on WhatsApp?</em>"
+          text: "Hope Dental Hub provides gentle pediatric & family dental care under Dr. Sindhu Shanmugavel (BDS). <br><br><em>Would you like me to assist you with booking an appointment on WhatsApp?</em>"
         }
       ]);
     } finally {
@@ -290,12 +311,12 @@ I would like to book an appointment:
             <div className="flex flex-wrap items-center justify-center sm:justify-start gap-1.5 text-[11px] sm:text-xs">
               <span className="w-2 h-2 rounded-full bg-[#0d8a7b] animate-pulse"></span>
               <span className="font-semibold text-white">
-                Hope Dental & Kids Hub
+                Hope Dental Hub
               </span>
               <span className="text-slate-400 hidden sm:inline">•</span>
-              <span className="text-slate-300">Dr. Sinthu Shanmugavel (BDS)</span>
+              <span className="text-slate-300">Dr. Sindhu Shanmugavel (BDS)</span>
             </div>
-            <div className="flex items-center gap-2 text-[11px] text-slate-300 font-medium">
+            <div className="flex items-center gap-2 text-[10px] sm:text-[11px] text-slate-300 font-medium">
               <span>10:30 AM – 1:30 PM</span>
               <span>|</span>
               <span>5:00 PM – 9:00 PM</span>
@@ -305,21 +326,25 @@ I would like to book an appointment:
 
         {/* NAVIGATION NAVBAR */}
         <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-100 shadow-xs">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between gap-2">
+          <div className="max-w-7xl mx-auto px-3 sm:px-6 h-16 sm:h-20 flex items-center justify-between gap-1.5 sm:gap-2">
             
             {/* Brand Logo */}
             <div 
-              className="flex items-center gap-2 sm:gap-2.5 cursor-pointer shrink-0" 
+              className="flex items-center gap-2 cursor-pointer shrink-0" 
               onClick={() => { setActiveTab('main'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
             >
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-[#0d8a7b] text-white flex items-center justify-center shadow-md">
-                <svg className="w-5 h-5 sm:w-6 sm:h-6 fill-current" viewBox="0 0 24 24">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-[#0d8a7b] text-white flex items-center justify-center shadow-md shrink-0">
+                <svg className="w-4 h-4 sm:w-6 sm:h-6 fill-current" viewBox="0 0 24 24">
                   <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
                 </svg>
               </div>
               <div>
-                <span className="text-sm sm:text-lg font-black tracking-tight text-[#0c1d2d] block leading-tight">HOPE DENTAL</span>
-                <span className="text-[8px] sm:text-[9px] font-extrabold tracking-widest text-[#0d8a7b] uppercase block">DENTAL & KIDS HUB</span>
+                <span className="hover-glitch-text text-xs sm:text-lg font-black tracking-tight text-[#0c1d2d] hover:text-[#0d8a7b] block leading-none font-mono">
+                  HOPE DENTAL
+                </span>
+                <span className="text-[7px] sm:text-[9px] font-extrabold tracking-widest text-[#0d8a7b] uppercase block mt-0.5">
+                  ADULTS & KIDS
+                </span>
               </div>
             </div>
 
@@ -327,7 +352,7 @@ I would like to book an appointment:
             <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 shrink-0">
               <button
                 onClick={() => setActiveTab('main')}
-                className={`px-2.5 sm:px-4 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold transition-all ${
+                className={`px-2 sm:px-4 py-1.5 rounded-lg text-[10px] sm:text-xs font-bold transition-all whitespace-nowrap ${
                   activeTab === 'main' 
                     ? 'bg-white text-[#0c1d2d] shadow-xs' 
                     : 'text-slate-500 hover:text-[#0c1d2d]'
@@ -337,29 +362,29 @@ I would like to book an appointment:
               </button>
               <button
                 onClick={() => setActiveTab('kids')}
-                className={`px-2.5 sm:px-4 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold transition-all flex items-center gap-1 ${
+                className={`px-2 sm:px-4 py-1.5 rounded-lg text-[10px] sm:text-xs font-bold transition-all flex items-center gap-1 whitespace-nowrap ${
                   activeTab === 'kids' 
                     ? 'bg-gradient-to-r from-amber-400 to-pink-500 text-white shadow-sm' 
                     : 'text-amber-600 hover:text-amber-700'
                 }`}
               >
-                <span>🎈</span> <span className="hidden sm:inline">Kids</span> Zone
+                <span>🎈</span> <span>Kids Zone</span>
               </button>
             </div>
 
             {/* Desktop Nav Links */}
             <nav className="hidden lg:flex items-center gap-6 text-xs font-bold text-slate-600">
-              <button onClick={() => scrollToSection('about')} className="hover:text-[#0d8a7b] transition-colors">About Us</button>
               <button onClick={() => scrollToSection('treatments')} className="hover:text-[#0d8a7b] transition-colors">Treatments</button>
               <button onClick={() => scrollToSection('transformations')} className="hover:text-[#0d8a7b] transition-colors">Results</button>
-              <button onClick={() => scrollToSection('hours')} className="hover:text-[#0d8a7b] transition-colors">Hours</button>
+              <button onClick={() => scrollToSection('about')} className="hover:text-[#0d8a7b] transition-colors">About Us</button>
+              <button onClick={() => scrollToSection('hours')} className="hover:text-[#0d8a7b] transition-colors">Hours & Contact</button>
             </nav>
 
             {/* Actions */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2">
               <button 
                 onClick={() => setIsLikOpen(true)} 
-                className="bg-[#e6f7f5] text-[#0d8a7b] border border-[#0d8a7b]/30 px-2.5 sm:px-3 py-2 rounded-xl text-xs font-bold hover:bg-[#d4eee9] transition-all flex items-center gap-1.5"
+                className="bg-[#e6f7f5] text-[#0d8a7b] border border-[#0d8a7b]/30 px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-bold hover:bg-[#d4eee9] transition-all flex items-center gap-1 shrink-0"
               >
                 <span className="w-1.5 h-1.5 rounded-full bg-[#0d8a7b]"></span> Ask AI
               </button>
@@ -374,39 +399,38 @@ I would like to book an appointment:
         </header>
 
         {/* ==================================================== */}
-        {/* 1. DEDICATED KIDS DENTAL PAGE VIEW                   */}
+        {/* KIDS DENTAL PAGE VIEW                                */}
         {/* ==================================================== */}
         {activeTab === 'kids' ? (
           <main className="w-full">
-            {/* Kids Hero Banner */}
-            <section className="relative py-10 sm:py-16 lg:py-24 overflow-hidden bg-gradient-to-b from-amber-50/70 via-pink-50/40 to-white">
+            <section className="relative py-8 sm:py-16 lg:py-24 overflow-hidden bg-gradient-to-b from-amber-50/70 via-pink-50/40 to-white">
               <div className="max-w-7xl mx-auto px-4 sm:px-6">
-                <div className="grid lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+                <div className="grid lg:grid-cols-12 gap-6 lg:gap-10 items-center">
                   
                   <div className="lg:col-span-7 space-y-4 sm:space-y-6 text-center lg:text-left">
-                    <div className="inline-flex items-center gap-2 border border-amber-300 bg-amber-100/70 text-amber-800 text-xs font-bold px-3.5 py-1.5 rounded-full shadow-xs">
+                    <div className="inline-flex items-center gap-1.5 border border-amber-300 bg-amber-100/70 text-amber-800 text-[10px] sm:text-xs font-bold px-3 py-1 rounded-full shadow-xs">
                       <span>🎈</span>
                       <span>100% Fear-Free • Friendly Pediatric Dental Care</span>
                     </div>
 
-                    <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-[#0c1d2d] tracking-tight leading-tight">
+                    <h1 className="text-2xl sm:text-5xl lg:text-6xl font-black text-[#0c1d2d] tracking-tight leading-tight">
                       Happy Smiles for <br className="hidden sm:inline" />
                       <span className="bg-gradient-to-r from-amber-500 via-pink-500 to-purple-600 bg-clip-text text-transparent">
                         Your Little Champions!
                       </span>
                     </h1>
 
-                    <p className="text-slate-600 text-sm sm:text-base lg:text-lg leading-relaxed max-w-xl mx-auto lg:mx-0 font-medium">
-                      We understand how deeply you care for your child's wellbeing. At Hope Dental, we make dental visits an exciting, gentle, and completely pain-free journey.
+                    <p className="text-slate-600 text-xs sm:text-base lg:text-lg leading-relaxed max-w-xl mx-auto lg:mx-0 font-medium">
+                      We understand how deeply you care for your child's wellbeing. At Hope Dental Hub, we make dental visits an exciting, gentle, and completely pain-free journey.
                     </p>
 
-                    <div className="pt-2 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-center lg:justify-start">
+                    <div className="pt-2 flex flex-col sm:flex-row gap-2.5 sm:gap-3 items-stretch sm:items-center justify-center lg:justify-start">
                       <button 
                         onClick={() => {
                           setFormData(prev => ({ ...prev, treatment: 'Cavity Shield & Fluoride Varnish' }));
                           setIsModalOpen(true);
                         }} 
-                        className="bg-gradient-to-r from-amber-500 to-pink-500 hover:from-amber-600 hover:to-pink-600 text-white font-black px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl sm:rounded-2xl shadow-xl shadow-pink-500/20 transition-all text-xs flex items-center justify-center gap-2"
+                        className="bg-gradient-to-r from-amber-500 to-pink-500 hover:from-amber-600 hover:to-pink-600 text-white font-black px-5 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl shadow-xl shadow-pink-500/20 transition-all text-xs flex items-center justify-center gap-2"
                       >
                         <span>🧸</span> Schedule Kid's Checkup
                       </button>
@@ -415,58 +439,57 @@ I would like to book an appointment:
                           setQueryInput("What pediatric treatments do you offer for young children and cavities?");
                           setIsLikOpen(true);
                         }} 
-                        className="bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 font-bold px-5 sm:px-6 py-3.5 sm:py-4 rounded-xl sm:rounded-2xl transition-all text-xs flex items-center justify-center gap-2 shadow-xs"
+                        className="bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 font-bold px-4 sm:px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl transition-all text-xs flex items-center justify-center gap-2 shadow-xs"
                       >
                         💬 Ask LIK AI About Kids Care
                       </button>
                     </div>
 
-                    <div className="pt-6 border-t border-amber-100 grid grid-cols-3 gap-2 sm:gap-4 max-w-md mx-auto lg:mx-0">
-                      <div className="bg-white p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border border-amber-100 shadow-xs text-center">
-                        <p className="text-base sm:text-xl font-black text-amber-600">Zero Tears</p>
-                        <p className="text-[9px] sm:text-[10px] text-slate-500 font-semibold mt-0.5">Gentle Numbing</p>
+                    <div className="pt-4 sm:pt-6 border-t border-amber-100 grid grid-cols-3 gap-1.5 sm:gap-4 max-w-md mx-auto lg:mx-0">
+                      <div className="bg-white p-2 rounded-xl border border-amber-100 shadow-xs text-center">
+                        <p className="text-xs sm:text-xl font-black text-amber-600">Zero Tears</p>
+                        <p className="text-[8px] sm:text-[10px] text-slate-500 font-semibold mt-0.5">Gentle Care</p>
                       </div>
-                      <div className="bg-white p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border border-pink-100 shadow-xs text-center">
-                        <p className="text-base sm:text-xl font-black text-pink-600">Fluoride</p>
-                        <p className="text-[9px] sm:text-[10px] text-slate-500 font-semibold mt-0.5">Anti-Cavity Seal</p>
+                      <div className="bg-white p-2 rounded-xl border border-pink-100 shadow-xs text-center">
+                        <p className="text-xs sm:text-xl font-black text-pink-600">Fluoride</p>
+                        <p className="text-[8px] sm:text-[10px] text-slate-500 font-semibold mt-0.5">Cavity Seal</p>
                       </div>
-                      <div className="bg-white p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border border-purple-100 shadow-xs text-center">
-                        <p className="text-base sm:text-xl font-black text-purple-600">Playful</p>
-                        <p className="text-[9px] sm:text-[10px] text-slate-500 font-semibold mt-0.5">Warm Doctors</p>
+                      <div className="bg-white p-2 rounded-xl border border-purple-100 shadow-xs text-center">
+                        <p className="text-xs sm:text-xl font-black text-purple-600">Playful</p>
+                        <p className="text-[8px] sm:text-[10px] text-slate-500 font-semibold mt-0.5">Warm Team</p>
                       </div>
                     </div>
                   </div>
 
-                  {/* Dual Child Picture Showcase Cards */}
                   <div className="lg:col-span-5 relative mt-4 lg:mt-0">
-                    <div className="grid grid-cols-2 gap-3 sm:gap-4 max-w-md mx-auto">
-                      <div className="group relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-lg border-2 sm:border-4 border-white bg-amber-100">
+                    <div className="grid grid-cols-2 gap-2 sm:gap-4 max-w-sm mx-auto">
+                      <div className="group relative rounded-2xl overflow-hidden shadow-md border-2 border-white bg-amber-100">
                         <img 
                           src={kidSmile1} 
-                          alt="Happy boy smiling at Hope Dental" 
-                          className="w-full h-48 sm:h-64 object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                          alt="Happy child smiling" 
+                          className="w-full h-36 sm:h-64 object-cover object-center group-hover:scale-105 transition-transform duration-500"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-[#0c1d2d]/80 via-transparent to-transparent"></div>
-                        <div className="absolute bottom-2.5 left-2.5 right-2.5 text-white">
-                          <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-wider bg-amber-500 text-white px-1.5 py-0.5 rounded">
+                        <div className="absolute bottom-2 left-2 right-2 text-white">
+                          <span className="text-[7px] sm:text-[9px] font-black uppercase tracking-wider bg-amber-500 text-white px-1.5 py-0.5 rounded">
                             Cavity-Free
                           </span>
-                          <p className="text-[11px] sm:text-xs font-black mt-1">Confident Smiles</p>
+                          <p className="text-[10px] sm:text-xs font-black mt-0.5 leading-tight">Confident Smiles</p>
                         </div>
                       </div>
 
-                      <div className="group relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-lg border-2 sm:border-4 border-white bg-pink-100 mt-4 sm:mt-6">
+                      <div className="group relative rounded-2xl overflow-hidden shadow-md border-2 border-white bg-pink-100 mt-2 sm:mt-6">
                         <img 
                           src={kidSmile2} 
-                          alt="Joyful girl laughing at Hope Dental Hub" 
-                          className="w-full h-48 sm:h-64 object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                          alt="Joyful girl laughing" 
+                          className="w-full h-36 sm:h-64 object-cover object-center group-hover:scale-105 transition-transform duration-500"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-[#0c1d2d]/80 via-transparent to-transparent"></div>
-                        <div className="absolute bottom-2.5 left-2.5 right-2.5 text-white">
-                          <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-wider bg-pink-500 text-white px-1.5 py-0.5 rounded">
-                            Pain-Free Care
+                        <div className="absolute bottom-2 left-2 right-2 text-white">
+                          <span className="text-[7px] sm:text-[9px] font-black uppercase tracking-wider bg-pink-500 text-white px-1.5 py-0.5 rounded">
+                            Pain-Free
                           </span>
-                          <p className="text-[11px] sm:text-xs font-black mt-1">Tear-Free Visits</p>
+                          <p className="text-[10px] sm:text-xs font-black mt-0.5 leading-tight">Zero Tears</p>
                         </div>
                       </div>
                     </div>
@@ -477,40 +500,41 @@ I would like to book an appointment:
             </section>
 
             {/* Kids Specialized Treatments Grid */}
-            <section className="py-14 sm:py-20 bg-white">
+            <section className="py-12 sm:py-20 bg-white">
               <div className="max-w-7xl mx-auto px-4 sm:px-6">
-                <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-14">
+                <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-14">
                   <span className="text-[10px] sm:text-[11px] font-extrabold text-amber-600 tracking-widest uppercase bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
                     CHILDREN'S SPECIALIZED DENTAL CARE
                   </span>
-                  <h2 className="text-2xl sm:text-4xl font-black text-[#0c1d2d] mt-3 tracking-tight">
+                  <h2 className="text-2xl sm:text-4xl font-black text-[#0c1d2d] mt-2 tracking-tight">
                     Tailored Treatments for Young Teeth
                   </h2>
-                  <p className="text-slate-500 text-xs sm:text-sm mt-2">
+                  <p className="text-slate-500 text-xs sm:text-sm mt-1.5">
                     Gentle procedures designed to protect baby teeth and guide the healthy growth of permanent smiles.
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-                  {kidsTreatmentsData.map((k) => (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-8">
+                  {kidsTreatmentsData.map((k, idx) => (
                     <div 
                       key={k.id}
-                      className="bg-[#fcfdfa] rounded-2xl sm:rounded-3xl overflow-hidden border border-amber-100/90 hover:border-amber-400 transition-all duration-300 shadow-xs hover:shadow-xl flex flex-col justify-between"
+                      style={{ animationDelay: `${idx * 0.15}s` }}
+                      className="group bg-[#fcfdfa] rounded-2xl sm:rounded-3xl overflow-hidden border border-amber-200/80 hover:border-amber-400 hover:shadow-xl hover:shadow-amber-500/10 transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between"
                     >
                       <div>
-                        <div className="relative h-44 sm:h-48 w-full bg-slate-100 overflow-hidden">
+                        <div className="relative h-40 sm:h-48 w-full bg-slate-100 overflow-hidden">
                           <img 
                             src={k.image} 
                             alt={k.title} 
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                          <span className="absolute top-3 left-3 bg-white/95 text-[#0c1d2d] text-[10px] font-black px-2.5 py-1 rounded-full shadow-md">
+                          <span className="absolute top-2.5 left-2.5 bg-white/95 text-[#0c1d2d] text-[9px] sm:text-[10px] font-black px-2 py-0.5 rounded-full shadow-md">
                             {k.badge}
                           </span>
                         </div>
 
-                        <div className="p-5 sm:p-6 space-y-2.5 sm:space-y-3">
+                        <div className="p-4 sm:p-6 space-y-2">
                           <h3 className="font-bold text-[#0c1d2d] text-base sm:text-lg leading-snug">
                             {k.title}
                           </h3>
@@ -531,13 +555,13 @@ I would like to book an appointment:
                         </div>
                       </div>
 
-                      <div className="p-5 sm:p-6 pt-0">
+                      <div className="p-4 sm:p-6 pt-0">
                         <button
                           onClick={() => {
                             setFormData(prev => ({ ...prev, treatment: k.title }));
                             setIsModalOpen(true);
                           }}
-                          className="w-full bg-slate-100 hover:bg-gradient-to-r hover:from-amber-500 hover:to-pink-500 hover:text-white text-[#0c1d2d] text-xs font-bold py-3 rounded-xl transition-all shadow-xs text-center"
+                          className="w-full bg-slate-100 hover:bg-gradient-to-r hover:from-amber-500 hover:to-pink-500 hover:text-white text-[#0c1d2d] text-xs font-bold py-2.5 rounded-xl transition-all shadow-xs text-center"
                         >
                           Book for Child →
                         </button>
@@ -549,8 +573,8 @@ I would like to book an appointment:
             </section>
 
             {/* Parental Dental Guide & FAQ */}
-            <section className="py-14 sm:py-16 bg-slate-50 border-t border-slate-200/60">
-              <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-6 sm:space-y-8">
+            <section className="py-12 sm:py-16 bg-slate-50 border-t border-slate-200/60">
+              <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-5 sm:space-y-8">
                 <div className="text-center">
                   <span className="text-[10px] sm:text-[11px] font-extrabold text-[#0d8a7b] tracking-widest uppercase">
                     PARENT'S GUIDE & FAQ
@@ -563,21 +587,21 @@ I would like to book an appointment:
                 <div className="space-y-3 sm:space-y-4 text-xs sm:text-sm">
                   <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs">
                     <h4 className="font-bold text-[#0c1d2d] text-sm sm:text-base">When should my child visit the dentist for the first time?</h4>
-                    <p className="text-slate-600 mt-2 leading-relaxed text-xs sm:text-sm">
+                    <p className="text-slate-600 mt-1.5 leading-relaxed text-xs sm:text-sm">
                       Pediatric dental guidelines recommend a child's first checkup by their <strong>1st birthday</strong> or within six months after their first baby tooth emerges.
                     </p>
                   </div>
 
                   <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs">
                     <h4 className="font-bold text-[#0c1d2d] text-sm sm:text-base">Why are baby teeth important if they fall out anyway?</h4>
-                    <p className="text-slate-600 mt-2 leading-relaxed text-xs sm:text-sm">
+                    <p className="text-slate-600 mt-1.5 leading-relaxed text-xs sm:text-sm">
                       Baby teeth guide proper jaw growth, speech clarity, and healthy nutrition. They act as placeholders for permanent teeth to avoid future crowding.
                     </p>
                   </div>
 
                   <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs">
                     <h4 className="font-bold text-[#0c1d2d] text-sm sm:text-base">How do sealants prevent cavities in school-going children?</h4>
-                    <p className="text-slate-600 mt-2 leading-relaxed text-xs sm:text-sm">
+                    <p className="text-slate-600 mt-1.5 leading-relaxed text-xs sm:text-sm">
                       Sealants act as a smooth protective shield over the deep grooves of molars where 80% of childhood cavities occur, blocking out bacteria and food particles.
                     </p>
                   </div>
@@ -587,108 +611,117 @@ I would like to book an appointment:
           </main>
         ) : (
           /* ==================================================== */
-          /* 2. MAIN CLINIC VIEW                                  */
+          /* MAIN CLINIC VIEW                                     */
           /* ==================================================== */
           <main className="w-full">
-            {/* HERO SECTION */}
-            <section className="relative py-14 sm:py-20 lg:py-28 overflow-hidden bg-slate-900">
-              <div className="absolute inset-0 z-0">
+            {/* 1. HERO SECTION WITH TYPEWRITER LETTER FONT */}
+            <section className="relative py-12 sm:py-20 lg:py-28 overflow-hidden bg-[#0a1520]">
+              <div className="absolute inset-0 z-0 opacity-40">
                 <img 
                   src={clinicRoom} 
-                  alt="Hope Dental Consultation Room" 
+                  alt="Hope Dental Hub Consultation Room" 
                   className="w-full h-full object-cover object-center"
                 />
-                <div className="absolute inset-0 bg-[#0c1d2d]/80 backdrop-blur-[1px]"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-[#0c1d2d] via-[#0c1d2d]/90 to-[#07131e]"></div>
               </div>
 
               <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6">
                 <div className="grid lg:grid-cols-12 gap-8 lg:gap-10 items-center">
                   
                   <div className="lg:col-span-7 space-y-4 sm:space-y-6 text-center lg:text-left">
-                    <div className="inline-flex items-center gap-2 border border-[#0d8a7b]/60 bg-[#0c1d2d]/80 text-[#90dcd0] text-[11px] sm:text-xs font-bold px-3.5 py-1.5 rounded-full backdrop-blur-md">
-                      <span>★</span>
-                      <span>3+ Years of Excellence • Stepping into Year 4</span>
+                    <div className="inline-flex items-center gap-2 border border-[#0d8a7b]/60 bg-[#0c1d2d]/90 text-[#90dcd0] text-[10px] sm:text-xs font-mono font-bold px-3 py-1.5 rounded-full backdrop-blur-md shadow-inner shadow-[#0d8a7b]/30">
+                      <span className="w-2 h-2 rounded-full bg-[#0d8a7b] animate-ping"></span>
+                      <span>● CLINICAL EXCELLENCE • YEAR 4</span>
                     </div>
 
-                    <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.15]">
-                      Welcome to <br />
-                      <span className="font-serif italic font-semibold text-[#5eead4] text-4xl sm:text-6xl lg:text-7xl block mt-1">
-                        Hope Dental
-                      </span>
-                    </h1>
+                    {/* Styled Typewriter Headline */}
+                    <div className="min-h-[75px] sm:min-h-[140px] flex flex-col justify-center">
+                      <h1 className="text-2xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.2] font-mono">
+                        <span className="text-slate-200 block text-lg sm:text-3xl lg:text-4xl font-sans tracking-normal font-light mb-1">
+                          Welcome to
+                        </span>
+                        <span className="hover-glitch-text bg-gradient-to-r from-[#5eead4] via-[#2dd4bf] to-[#0d8a7b] bg-clip-text text-transparent drop-shadow-sm">
+                          {displayedTitle.replace("Welcome to ", "")}
+                        </span>
+                        <span className="inline-block w-2 sm:w-3.5 h-6 sm:h-11 ml-1 bg-[#5eead4] align-middle animate-cursor"></span>
+                      </h1>
+                    </div>
 
-                    <p className="text-slate-200 text-sm sm:text-base lg:text-lg leading-relaxed max-w-xl mx-auto lg:mx-0 font-medium">
+                    <p className="text-slate-300 text-xs sm:text-base lg:text-lg leading-relaxed max-w-xl mx-auto lg:mx-0 font-normal">
                       Providing compassionate, gentle dental care for your whole family. Advanced, state-of-the-art treatments for beautiful, healthy smiles.
                     </p>
 
-                    <div className="pt-2 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-center lg:justify-start">
-                      <button 
-                        onClick={() => setIsModalOpen(true)} 
-                        className="bg-[#0d8a7b] hover:bg-[#0a7265] text-white font-bold px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl shadow-lg shadow-black/40 transition-all text-xs"
+                    <div className="pt-2 flex flex-col sm:flex-row gap-2.5 sm:gap-3 items-stretch sm:items-center justify-center lg:justify-start">
+                      <a 
+                        href={`tel:+91${CLINIC_WHATSAPP_NUMBER}`} 
+                        className="bg-[#0d8a7b] hover:bg-[#0a7265] text-white font-bold px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl shadow-lg shadow-[#0d8a7b]/30 hover:shadow-[#0d8a7b]/50 transition-all text-xs flex items-center justify-center gap-2 hover:-translate-y-0.5 active:translate-y-0"
                       >
-                        Book Your Consultation
-                      </button>
+                        <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                          <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.03 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/>
+                        </svg>
+                        Call Clinic
+                      </a>
                       <button 
                         onClick={() => setIsLikOpen(true)} 
-                        className="bg-white/10 hover:bg-white/20 text-white border border-white/30 font-bold px-5 sm:px-6 py-3.5 sm:py-4 rounded-xl shadow-sm backdrop-blur-md transition-all text-xs flex items-center justify-center gap-2"
+                        className="bg-white/10 hover:bg-white/20 text-white border border-white/30 font-bold px-5 sm:px-6 py-3.5 sm:py-4 rounded-xl shadow-sm backdrop-blur-md transition-all text-xs flex items-center justify-center gap-2 hover:-translate-y-0.5 active:translate-y-0"
                       >
                         <svg className="w-4 h-4 fill-[#5eead4]" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
                         Ask LIK AI Assistant
                       </button>
                     </div>
 
-                    <div className="pt-6 border-t border-slate-600/60 grid grid-cols-3 gap-2 sm:gap-4 max-w-md mx-auto lg:mx-0 text-white">
+                    <div className="pt-6 border-t border-slate-700/60 grid grid-cols-3 gap-2 sm:gap-4 max-w-md mx-auto lg:mx-0 text-white">
                       <div>
-                        <p className="text-xl sm:text-3xl font-black">3+ Yrs</p>
-                        <p className="text-[10px] sm:text-xs text-slate-300 font-semibold mt-0.5">Trusted Care</p>
+                        <p className="text-lg sm:text-3xl font-black font-mono text-[#5eead4]">3+ Yrs</p>
+                        <p className="text-[9px] sm:text-xs text-slate-400 font-semibold mt-0.5">Trusted Care</p>
                       </div>
                       <div>
-                        <p className="text-xl sm:text-3xl font-black">12+</p>
-                        <p className="text-[10px] sm:text-xs text-slate-300 font-semibold mt-0.5">Treatments</p>
+                        <p className="text-lg sm:text-3xl font-black font-mono text-[#5eead4]">12+</p>
+                        <p className="text-[9px] sm:text-xs text-slate-400 font-semibold mt-0.5">Treatments</p>
                       </div>
                       <div>
-                        <p className="text-xl sm:text-3xl font-black">100%</p>
-                        <p className="text-[10px] sm:text-xs text-slate-300 font-semibold mt-0.5">Painless Care</p>
+                        <p className="text-lg sm:text-3xl font-black font-mono text-[#5eead4]">100%</p>
+                        <p className="text-[9px] sm:text-xs text-slate-400 font-semibold mt-0.5">Painless Care</p>
                       </div>
                     </div>
                   </div>
 
                   {/* Doctor Info Card */}
                   <div className="lg:col-span-5 relative mt-4 lg:mt-0">
-                    <div className="bg-white/95 backdrop-blur-md rounded-2xl sm:rounded-3xl p-5 sm:p-8 border border-white shadow-2xl">
+                    <div className="bg-[#112538]/90 backdrop-blur-md rounded-2xl sm:rounded-3xl p-5 sm:p-8 border border-[#0d8a7b]/40 shadow-2xl text-white">
                       <div className="flex items-center gap-3.5">
-                        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#0c1d2d] text-[#0d8a7b] flex items-center justify-center font-bold text-xl shrink-0">
-                          <svg className="w-6 h-6 sm:w-7 sm:h-7 fill-current" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                        <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-2xl bg-[#0c1d2d] text-[#5eead4] border border-[#0d8a7b]/50 flex items-center justify-center font-bold text-lg sm:text-xl shrink-0">
+                          <svg className="w-5 h-5 sm:w-7 sm:h-7 fill-current" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
                         </div>
                         <div>
-                          <h3 className="text-lg sm:text-xl font-black text-[#0c1d2d]">Dr. Sinthu Shanmugavel</h3>
-                          <p className="text-[11px] sm:text-xs font-bold text-[#0d8a7b]">BDS • GENERAL DENTIST</p>
-                          <p className="text-[10px] sm:text-xs text-slate-500 font-medium">Lead Practitioner @ Hope Dental</p>
+                          <h3 className="text-base sm:text-xl font-black text-white">Dr. Sindhu Shanmugavel</h3>
+                          <p className="text-[10px] sm:text-xs font-bold font-mono text-[#5eead4]">BDS • GENERAL DENTIST</p>
+                          <p className="text-[9px] sm:text-xs text-slate-400 font-medium">Lead Practitioner @ Hope Dental Hub</p>
                         </div>
                       </div>
 
-                      <div className="mt-5 space-y-2.5 pt-5 border-t border-slate-100 text-xs font-semibold text-slate-700">
+                      <div className="mt-4 sm:mt-5 space-y-2 sm:space-y-2.5 pt-4 sm:pt-5 border-t border-slate-700/60 text-xs font-semibold text-slate-300">
                         <div className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#0d8a7b] shrink-0"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#5eead4] shrink-0"></span>
                           <span>Root Canal Treatment & Pain Relief</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#0d8a7b] shrink-0"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#5eead4] shrink-0"></span>
                           <span>Invisalign & Orthodontic Braces</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#0d8a7b] shrink-0"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#5eead4] shrink-0"></span>
                           <span>Dental Implants & Dentures</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#0d8a7b] shrink-0"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#5eead4] shrink-0"></span>
                           <span>Cosmetic Makeovers & Veneers</span>
                         </div>
                       </div>
 
-                      <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-[11px] font-bold text-slate-500">
+                      <div className="mt-5 pt-3 sm:pt-4 border-t border-slate-700/60 flex items-center justify-between text-[10px] sm:text-[11px] font-bold text-slate-400">
                         <span>Morning & Evening Slots</span>
-                        <span className="text-[#0d8a7b] bg-[#e6f7f5] px-2.5 py-0.5 rounded-full border border-[#0d8a7b]/20">Open Mon - Sat</span>
+                        <span className="text-[#5eead4] bg-[#0d8a7b]/20 px-2 py-0.5 rounded-full border border-[#0d8a7b]/40">Open Mon - Sat</span>
                       </div>
                     </div>
                   </div>
@@ -697,62 +730,263 @@ I would like to book an appointment:
               </div>
             </section>
 
-            {/* ABOUT OUR CLINIC */}
-            <section id="about" className="py-14 sm:py-20 bg-white">
+            {/* 2. BRIGHT & MODERN CLINICAL SERVICES CATALOG (White & Green Theme) */}
+            <section id="treatments" className="py-14 sm:py-24 bg-slate-50/70 border-t border-slate-200">
               <div className="max-w-7xl mx-auto px-4 sm:px-6">
-                <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-14">
+                <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-16">
+                  <span className="text-[10px] sm:text-[11px] font-extrabold text-[#0d8a7b] tracking-widest uppercase bg-[#e6f7f5] border border-[#0d8a7b]/30 px-3.5 py-1 rounded-full">
+                    CLINICAL SERVICES CATALOG
+                  </span>
+                  <h2 className="text-2xl sm:text-4xl font-black text-[#0c1d2d] mt-2.5 tracking-tight">
+                    Comprehensive Dental Treatments
+                  </h2>
+                  <p className="text-slate-500 text-xs sm:text-sm mt-1.5">
+                    Gentle, pain-free procedures designed for lasting oral wellness. Click any treatment to explore details and photos.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-8">
+                  {treatmentsData.map((item, index) => (
+                    <div
+                      key={item.id}
+                      onClick={() => setSelectedTreatment(item)}
+                      style={{ animationDelay: `${index * 0.1}s` }}
+                      className="group bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200 hover:border-[#0d8a7b] hover:shadow-xl hover:shadow-[#0d8a7b]/10 transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col justify-between"
+                    >
+                      <div>
+                        {/* Treatment Header Image */}
+                        <div className="relative h-40 sm:h-48 w-full bg-slate-100 overflow-hidden">
+                          <img 
+                            src={item.sampleImage} 
+                            alt={item.title} 
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-[#0c1d2d]/60 via-transparent to-transparent"></div>
+                          <span className="absolute top-2.5 left-2.5 bg-white/95 text-[#0c1d2d] text-[9px] sm:text-[10px] font-black px-2 py-0.5 rounded-full shadow-md">
+                            {item.badge}
+                          </span>
+                        </div>
+
+                        {/* Treatment Body Content */}
+                        <div className="p-4 sm:p-6 space-y-2">
+                          <div className="flex items-center gap-2">
+                            <span className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#e6f7f5] text-[#0d8a7b] flex items-center justify-center font-bold shrink-0">
+                              {item.icon}
+                            </span>
+                            <h3 className="font-bold text-[#0c1d2d] text-sm sm:text-lg leading-snug group-hover:text-[#0d8a7b] transition-colors">
+                              {item.title}
+                            </h3>
+                          </div>
+                          
+                          <p className="text-xs font-bold text-[#0d8a7b]">{item.tamil}</p>
+                          
+                          <p className="text-xs text-slate-600 leading-relaxed font-normal">
+                            {item.shortDesc}
+                          </p>
+
+                          <div className="pt-2 space-y-1.5">
+                            {item.benefits.map((b, i) => (
+                              <div key={i} className="flex items-center gap-2 text-[11px] font-semibold text-slate-700">
+                                <span className="w-1.5 h-1.5 rounded-full bg-[#0d8a7b] shrink-0"></span>
+                                <span>{b}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Card Footer Button */}
+                      <div className="p-4 sm:p-6 pt-0">
+                        <div className="w-full bg-[#e6f7f5] group-hover:bg-[#0d8a7b] group-hover:text-white text-[#0d8a7b] text-xs font-bold py-2.5 rounded-xl transition-all shadow-xs text-center flex items-center justify-center gap-1.5">
+                          <span>Explore Procedure</span>
+                          <span className="text-sm group-hover:translate-x-1 transition-transform">→</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            {/* 3. SMILE TRANSFORMATIONS */}
+            <section id="transformations" className="py-12 sm:py-20 bg-white border-t border-slate-100">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6">
+                <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-14">
+                  <span className="text-[10px] sm:text-[11px] font-extrabold text-[#0d8a7b] tracking-widest uppercase">
+                    PROVEN RESULTS
+                  </span>
+                  <h2 className="text-2xl sm:text-4xl font-black text-[#0c1d2d] mt-2 tracking-tight">
+                    Smile Transformations: Before & After
+                  </h2>
+                  <p className="text-slate-500 text-xs sm:text-sm mt-1.5">
+                    Real patient case results delivered at Hope Dental Hub.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+                  
+                  {/* Card 1: Gap Closure */}
+                  <div className="group bg-[#fbfdfc] rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-200/80 shadow-xs space-y-3.5 hover:shadow-xl hover:border-[#0d8a7b]/40 hover:-translate-y-1 transition-all duration-300">
+                    <div className="relative h-40 sm:h-48 rounded-xl sm:rounded-2xl overflow-hidden bg-slate-100">
+                      <img 
+                        src={imgGapClosure} 
+                        alt="Gap Closure Before & After" 
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                      />
+                      <span className="absolute top-2 left-2 bg-[#0c1d2d]/80 text-white text-[8px] sm:text-[9px] font-black px-2 py-0.5 rounded backdrop-blur-sm uppercase">
+                        BEFORE
+                      </span>
+                      <span className="absolute top-2 right-2 bg-[#0d8a7b]/90 text-white text-[8px] sm:text-[9px] font-black px-2 py-0.5 rounded backdrop-blur-sm uppercase">
+                        AFTER
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 text-center text-[10px] sm:text-[11px] font-bold">
+                      <div className="bg-slate-100 p-2 rounded-xl text-slate-600">
+                        <p className="font-extrabold text-[#0c1d2d]">Gap Closure</p>
+                        <p className="text-[8px] sm:text-[9px] text-slate-400 font-normal mt-0.5">Irregular spacing</p>
+                      </div>
+                      <div className="bg-[#e6f7f5] p-2 rounded-xl text-[#085a50]">
+                        <p className="font-extrabold">Orthodontic</p>
+                        <p className="text-[8px] sm:text-[9px] text-[#0a7265] font-normal mt-0.5">Aligned & seamless</p>
+                      </div>
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-[#0c1d2d] text-sm">Patient A. Gap Closure</h4>
+                      <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                        Closed gaps between front teeth using orthodontic alignment and composite bonding for a natural smile.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Card 2: Advanced Restoration */}
+                  <div className="group bg-[#fbfdfc] rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-200/80 shadow-xs space-y-3.5 hover:shadow-xl hover:border-[#0d8a7b]/40 hover:-translate-y-1 transition-all duration-300">
+                    <div className="relative h-40 sm:h-48 rounded-xl sm:rounded-2xl overflow-hidden bg-slate-100">
+                      <img 
+                        src={imgVeneers} 
+                        alt="Restoration Before & After" 
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                      />
+                      <span className="absolute top-2 left-2 bg-[#0c1d2d]/80 text-white text-[8px] sm:text-[9px] font-black px-2 py-0.5 rounded backdrop-blur-sm uppercase">
+                        BEFORE
+                      </span>
+                      <span className="absolute top-2 right-2 bg-[#0d8a7b]/90 text-white text-[8px] sm:text-[9px] font-black px-2 py-0.5 rounded backdrop-blur-sm uppercase">
+                        AFTER
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 text-center text-[10px] sm:text-[11px] font-bold">
+                      <div className="bg-slate-100 p-2 rounded-xl text-slate-600">
+                        <p className="font-extrabold text-[#0c1d2d]">Discolored</p>
+                        <p className="text-[8px] sm:text-[9px] text-slate-400 font-normal mt-0.5">Enamel decay</p>
+                      </div>
+                      <div className="bg-[#e6f7f5] p-2 rounded-xl text-[#085a50]">
+                        <p className="font-extrabold">Crowns</p>
+                        <p className="text-[8px] sm:text-[9px] text-[#0a7265] font-normal mt-0.5">Bright & restored</p>
+                      </div>
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-[#0c1d2d] text-sm">Patient B. Advanced Restoration</h4>
+                      <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                        Extensive decay completely restored using custom crowns for long-lasting aesthetics and bite force.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Card 3: Smile Makeover */}
+                  <div className="group bg-[#fbfdfc] rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-200/80 shadow-xs space-y-3.5 hover:shadow-xl hover:border-[#0d8a7b]/40 hover:-translate-y-1 transition-all duration-300">
+                    <div className="relative h-40 sm:h-48 rounded-xl sm:rounded-2xl overflow-hidden bg-slate-100">
+                      <img 
+                        src={imgMakeover} 
+                        alt="Smile Makeover Before & After" 
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                      />
+                      <span className="absolute top-2 left-2 bg-[#0c1d2d]/80 text-white text-[8px] sm:text-[9px] font-black px-2 py-0.5 rounded backdrop-blur-sm uppercase">
+                        BEFORE
+                      </span>
+                      <span className="absolute top-2 right-2 bg-[#0d8a7b]/90 text-white text-[8px] sm:text-[9px] font-black px-2 py-0.5 rounded backdrop-blur-sm uppercase">
+                        AFTER
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 text-center text-[10px] sm:text-[11px] font-bold">
+                      <div className="bg-slate-100 p-2 rounded-xl text-slate-600">
+                        <p className="font-extrabold text-[#0c1d2d]">Misaligned</p>
+                        <p className="text-[8px] sm:text-[9px] text-slate-400 font-normal mt-0.5">Crowding</p>
+                      </div>
+                      <div className="bg-[#e6f7f5] p-2 rounded-xl text-[#085a50]">
+                        <p className="font-extrabold">Makeover</p>
+                        <p className="text-[8px] sm:text-[9px] text-[#0a7265] font-normal mt-0.5">Aligned & bright</p>
+                      </div>
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-[#0c1d2d] text-sm">Patient C. Complete Makeover</h4>
+                      <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                        Comprehensive alignment and cosmetic restoration for a natural, radiant smile.
+                      </p>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </section>
+
+            {/* 4. ABOUT OUR CLINIC */}
+            <section id="about" className="py-12 sm:py-20 bg-slate-50/50 border-t border-slate-100">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6">
+                <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-14">
                   <span className="text-[10px] sm:text-[11px] font-extrabold text-[#0d8a7b] tracking-widest uppercase">
                     ABOUT OUR CLINIC
                   </span>
                   <h2 className="text-2xl sm:text-4xl font-black text-[#0c1d2d] mt-2 tracking-tight">
-                    Meet Dr. Sinthu Shanmugavel
+                    Meet Dr. Sindhu Shanmugavel
                   </h2>
-                  <div className="w-12 h-1 bg-[#0d8a7b] mx-auto mt-3 rounded-full"></div>
+                  <div className="w-12 h-1 bg-[#0d8a7b] mx-auto mt-2.5 rounded-full"></div>
                 </div>
 
-                <div className="grid lg:grid-cols-12 gap-6 sm:gap-8 items-stretch">
-                  <div className="lg:col-span-5 bg-[#0c1d2d] text-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 flex flex-col justify-between shadow-xl">
+                <div className="grid lg:grid-cols-12 gap-5 sm:gap-8 items-stretch">
+                  <div className="lg:col-span-5 bg-[#0c1d2d] text-white rounded-2xl sm:rounded-3xl p-5 sm:p-8 flex flex-col justify-between shadow-xl border border-[#0d8a7b]/30">
                     <div>
-                      <span className="bg-[#0d8a7b] text-white text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">
+                      <span className="bg-[#0d8a7b] text-white text-[9px] sm:text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">
                         Chief Dental Surgeon
                       </span>
-                      <h3 className="text-xl sm:text-2xl font-black mt-4 sm:mt-6">Dr. Sinthu Shanmugavel</h3>
-                      <p className="text-xs text-[#90dcd0] font-bold mt-1">BDS — General Dentist</p>
-                      <p className="text-slate-300 text-xs sm:text-sm leading-relaxed mt-4">
-                        Experienced dentist dedicated to long-term community dental health. Dr. Sinthu Shanmugavel leads Hope Dental with a focus on comfortable, transparent, and completely pain-free care.
+                      <h3 className="text-lg sm:text-2xl font-black mt-3 sm:mt-6">Dr. Sindhu Shanmugavel</h3>
+                      <p className="text-xs text-[#90dcd0] font-bold mt-1 font-mono">BDS — General Dentist</p>
+                      <p className="text-slate-300 text-xs sm:text-sm leading-relaxed mt-3">
+                        Experienced dentist dedicated to long-term community dental health. Dr. Sindhu Shanmugavel leads Hope Dental Hub with a focus on comfortable, transparent, and completely pain-free care.
                       </p>
                     </div>
-                    <div className="mt-6 pt-4 border-t border-slate-800 text-xs italic text-[#90dcd0]">
+                    <div className="mt-5 pt-3.5 border-t border-slate-800 text-xs italic text-[#90dcd0]">
                       "Providing compassionate, gentle care for your whole family with state-of-the-art treatments."
                     </div>
                   </div>
 
-                  <div className="lg:col-span-7 grid sm:grid-cols-2 gap-4">
-                    <div className="bg-[#f3f9f8] rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-slate-100">
-                      <span className="text-xs font-black text-[#0d8a7b] bg-[#d4eee9] px-2.5 py-1 rounded-lg">01</span>
-                      <h4 className="font-bold text-[#0c1d2d] mt-3 text-sm sm:text-base">3+ Years of Trust</h4>
-                      <p className="text-xs text-slate-500 leading-relaxed mt-1.5">
+                  <div className="lg:col-span-7 grid sm:grid-cols-2 gap-3 sm:gap-4">
+                    <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-200/80 hover:border-[#0d8a7b]/40 shadow-xs transition-all">
+                      <span className="text-xs font-black text-[#0d8a7b] bg-[#d4eee9] px-2.5 py-1 rounded-lg font-mono">01</span>
+                      <h4 className="font-bold text-[#0c1d2d] mt-2 sm:mt-3 text-sm sm:text-base">3+ Years of Trust</h4>
+                      <p className="text-xs text-slate-500 leading-relaxed mt-1">
                         Completing 3 full years of successful dental care, stepping into Year 4 with modernized equipment.
                       </p>
                     </div>
-                    <div className="bg-[#f3f9f8] rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-slate-100">
-                      <span className="text-xs font-black text-[#0d8a7b] bg-[#d4eee9] px-2.5 py-1 rounded-lg">02</span>
-                      <h4 className="font-bold text-[#0c1d2d] mt-3 text-sm sm:text-base">All-in-One Treatments</h4>
-                      <p className="text-xs text-slate-500 leading-relaxed mt-1.5">
+                    <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-200/80 hover:border-[#0d8a7b]/40 shadow-xs transition-all">
+                      <span className="text-xs font-black text-[#0d8a7b] bg-[#d4eee9] px-2.5 py-1 rounded-lg font-mono">02</span>
+                      <h4 className="font-bold text-[#0c1d2d] mt-2 sm:mt-3 text-sm sm:text-base">All-in-One Treatments</h4>
+                      <p className="text-xs text-slate-500 leading-relaxed mt-1">
                         From simple cleanings and fillings to complex implants, smile makeovers, and orthodontic braces.
                       </p>
                     </div>
-                    <div className="bg-[#f3f9f8] rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-slate-100">
-                      <span className="text-xs font-black text-[#0d8a7b] bg-[#d4eee9] px-2.5 py-1 rounded-lg">03</span>
-                      <h4 className="font-bold text-[#0c1d2d] mt-3 text-sm sm:text-base">Strict Hygiene & Safety</h4>
-                      <p className="text-xs text-slate-500 leading-relaxed mt-1.5">
+                    <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-200/80 hover:border-[#0d8a7b]/40 shadow-xs transition-all">
+                      <span className="text-xs font-black text-[#0d8a7b] bg-[#d4eee9] px-2.5 py-1 rounded-lg font-mono">03</span>
+                      <h4 className="font-bold text-[#0c1d2d] mt-2 sm:mt-3 text-sm sm:text-base">Strict Hygiene & Safety</h4>
+                      <p className="text-xs text-slate-500 leading-relaxed mt-1">
                         Class-B autoclave sterilization standards for every instrument to guarantee total clinical safety.
                       </p>
                     </div>
-                    <div className="bg-[#f3f9f8] rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-slate-100">
-                      <span className="text-xs font-black text-[#0d8a7b] bg-[#d4eee9] px-2.5 py-1 rounded-lg">04</span>
-                      <h4 className="font-bold text-[#0c1d2d] mt-3 text-sm sm:text-base">Painless Techniques</h4>
-                      <p className="text-xs text-slate-500 leading-relaxed mt-1.5">
+                    <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-200/80 hover:border-[#0d8a7b]/40 shadow-xs transition-all">
+                      <span className="text-xs font-black text-[#0d8a7b] bg-[#d4eee9] px-2.5 py-1 rounded-lg font-mono">04</span>
+                      <h4 className="font-bold text-[#0c1d2d] mt-2 sm:mt-3 text-sm sm:text-base">Painless Techniques</h4>
+                      <p className="text-xs text-slate-500 leading-relaxed mt-1">
                         Modern numbing and gentle procedures designed to minimize discomfort for both kids and adults.
                       </p>
                     </div>
@@ -761,192 +995,18 @@ I would like to book an appointment:
 
               </div>
             </section>
-
-            {/* INTERACTIVE TREATMENTS OFFERED */}
-            <section id="treatments" className="py-14 sm:py-20 bg-white border-t border-slate-100">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6">
-                <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-14">
-                  <span className="text-[10px] sm:text-[11px] font-extrabold text-[#0d8a7b] tracking-widest uppercase">
-                    TREATMENTS OFFERED
-                  </span>
-                  <h2 className="text-2xl sm:text-4xl font-black text-[#0c1d2d] mt-2 tracking-tight">
-                    Comprehensive Dental Services
-                  </h2>
-                  <p className="text-slate-500 text-xs sm:text-sm mt-2">
-                    Click any treatment to view procedure details, benefits, and sample case imagery.
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-                  {treatmentsData.map((item) => (
-                    <div
-                      key={item.id}
-                      onClick={() => setSelectedTreatment(item)}
-                      className="group bg-[#f3f9f8] rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-transparent hover:border-[#0d8a7b]/40 flex flex-col justify-between transition-all duration-300 ease-in-out hover:-translate-y-1.5 hover:shadow-lg cursor-pointer"
-                    >
-                      <div>
-                        <div className="flex items-center justify-between">
-                          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-[#d4eee9] text-[#0d8a7b] flex items-center justify-center transition-colors duration-300 group-hover:bg-[#0d8a7b] group-hover:text-white shadow-xs">
-                            {item.icon}
-                          </div>
-                          <span className="text-[10px] font-bold text-[#0d8a7b] bg-white px-2.5 py-1 rounded-full border border-[#0d8a7b]/20 opacity-0 group-hover:opacity-100 transition-opacity">
-                            Details →
-                          </span>
-                        </div>
-
-                        <h3 className="font-bold text-[#0c1d2d] text-base sm:text-lg mt-4 transition-colors duration-300 group-hover:text-[#0d8a7b]">
-                          {item.title}
-                        </h3>
-                        <p className="text-xs font-bold text-[#0d8a7b] mt-0.5">{item.tamil}</p>
-                        <p className="text-xs text-slate-500 mt-2 leading-relaxed">
-                          {item.shortDesc}
-                        </p>
-                      </div>
-
-                      <div className="mt-4 pt-3 border-t border-slate-200/60 flex items-center justify-between text-[11px] font-semibold text-[#0d8a7b]">
-                        <span>Explore Procedure</span>
-                        <span className="text-sm group-hover:translate-x-1 transition-transform">→</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </section>
-
-            {/* SMILE TRANSFORMATIONS */}
-            <section id="transformations" className="py-14 sm:py-20 bg-slate-50/50 border-t border-slate-100">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6">
-                <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-14">
-                  <span className="text-[10px] sm:text-[11px] font-extrabold text-[#0d8a7b] tracking-widest uppercase">
-                    PROVEN RESULTS
-                  </span>
-                  <h2 className="text-2xl sm:text-4xl font-black text-[#0c1d2d] mt-2 tracking-tight">
-                    Smile Transformations: Before & After
-                  </h2>
-                  <p className="text-slate-500 text-xs sm:text-sm mt-2">
-                    Real patient case results delivered at Hope Dental Clinic.
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  
-                  {/* Card 1: Gap Closure */}
-                  <div className="group bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-slate-200/60 shadow-xs space-y-4 hover:shadow-lg transition-all">
-                    <div className="relative h-44 sm:h-48 rounded-xl sm:rounded-2xl overflow-hidden bg-slate-100">
-                      <img 
-                        src={imgGapClosure} 
-                        alt="Gap Closure Before & After" 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-                      />
-                      <span className="absolute top-2.5 left-2.5 bg-[#0c1d2d]/80 text-white text-[8px] sm:text-[9px] font-black px-2 py-0.5 rounded backdrop-blur-sm uppercase">
-                        BEFORE
-                      </span>
-                      <span className="absolute top-2.5 right-2.5 bg-[#0d8a7b]/90 text-white text-[8px] sm:text-[9px] font-black px-2 py-0.5 rounded backdrop-blur-sm uppercase">
-                        AFTER
-                      </span>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-2 text-center text-[11px] font-bold">
-                      <div className="bg-slate-100 p-2.5 rounded-xl text-slate-600">
-                        <p className="font-extrabold text-[#0c1d2d]">Gap Closure</p>
-                        <p className="text-[9px] text-slate-400 font-normal mt-0.5">Irregular spacing</p>
-                      </div>
-                      <div className="bg-[#e6f7f5] p-2.5 rounded-xl text-[#085a50]">
-                        <p className="font-extrabold">Seamless Finish</p>
-                        <p className="text-[9px] text-[#0a7265] font-normal mt-0.5">Composite bonding</p>
-                      </div>
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-[#0c1d2d] text-sm">Patient A. Gap Closure</h4>
-                      <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-                        Closed gaps between front teeth using composite bonding for a seamless look.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Card 2: Advanced Restoration */}
-                  <div className="group bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-slate-200/60 shadow-xs space-y-4 hover:shadow-lg transition-all">
-                    <div className="relative h-44 sm:h-48 rounded-xl sm:rounded-2xl overflow-hidden bg-slate-100">
-                      <img 
-                        src={imgVeneers} 
-                        alt="Restoration Before & After" 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-                      />
-                      <span className="absolute top-2.5 left-2.5 bg-[#0c1d2d]/80 text-white text-[8px] sm:text-[9px] font-black px-2 py-0.5 rounded backdrop-blur-sm uppercase">
-                        BEFORE
-                      </span>
-                      <span className="absolute top-2.5 right-2.5 bg-[#0d8a7b]/90 text-white text-[8px] sm:text-[9px] font-black px-2 py-0.5 rounded backdrop-blur-sm uppercase">
-                        AFTER
-                      </span>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-2 text-center text-[11px] font-bold">
-                      <div className="bg-slate-100 p-2.5 rounded-xl text-slate-600">
-                        <p className="font-extrabold text-[#0c1d2d]">Discolored</p>
-                        <p className="text-[9px] text-slate-400 font-normal mt-0.5">Enamel loss & decay</p>
-                      </div>
-                      <div className="bg-[#e6f7f5] p-2.5 rounded-xl text-[#085a50]">
-                        <p className="font-extrabold">Veneers</p>
-                        <p className="text-[9px] text-[#0a7265] font-normal mt-0.5">Bright, restored</p>
-                      </div>
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-[#0c1d2d] text-sm">Patient B. Advanced Restoration</h4>
-                      <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-                        Extensive decay completely restored using custom crowns and porcelain veneers.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Card 3: Smile Makeover */}
-                  <div className="group bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-slate-200/60 shadow-xs space-y-4 hover:shadow-lg transition-all">
-                    <div className="relative h-44 sm:h-48 rounded-xl sm:rounded-2xl overflow-hidden bg-slate-100">
-                      <img 
-                        src={imgMakeover} 
-                        alt="Smile Makeover Before & After" 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-                      />
-                      <span className="absolute top-2.5 left-2.5 bg-[#0c1d2d]/80 text-white text-[8px] sm:text-[9px] font-black px-2 py-0.5 rounded backdrop-blur-sm uppercase">
-                        BEFORE
-                      </span>
-                      <span className="absolute top-2.5 right-2.5 bg-[#0d8a7b]/90 text-white text-[8px] sm:text-[9px] font-black px-2 py-0.5 rounded backdrop-blur-sm uppercase">
-                        AFTER
-                      </span>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-2 text-center text-[11px] font-bold">
-                      <div className="bg-slate-100 p-2.5 rounded-xl text-slate-600">
-                        <p className="font-extrabold text-[#0c1d2d]">Misaligned</p>
-                        <p className="text-[9px] text-slate-400 font-normal mt-0.5">Crowding & staining</p>
-                      </div>
-                      <div className="bg-[#e6f7f5] p-2.5 rounded-xl text-[#085a50]">
-                        <p className="font-extrabold">Makeover</p>
-                        <p className="text-[9px] text-[#0a7265] font-normal mt-0.5">Aligned & confident</p>
-                      </div>
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-[#0c1d2d] text-sm">Patient C. Complete Makeover</h4>
-                      <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-                        Comprehensive alignment and cosmetic restoration for a natural smile.
-                      </p>
-                    </div>
-                  </div>
-
-                </div>
-              </div>
-            </section>
           </main>
         )}
       </div>
 
-      {/* OPERATING HOURS & CONTACT */}
-      <section id="hours" className="py-14 sm:py-20 bg-[#0c1d2d] text-white">
+      {/* 5. OPERATING HOURS & CONTACT */}
+      <section id="hours" className="py-12 sm:py-20 bg-[#0c1d2d] text-white border-t border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="grid lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+          <div className="grid lg:grid-cols-12 gap-6 lg:gap-10 items-center">
             
-            <div className="lg:col-span-7 space-y-6">
+            <div className="lg:col-span-7 space-y-4 sm:space-y-6">
               <div>
-                <span className="text-[10px] sm:text-[11px] font-extrabold text-[#90dcd0] tracking-widest uppercase">
+                <span className="text-[10px] sm:text-[11px] font-mono font-extrabold text-[#90dcd0] tracking-widest uppercase">
                   பார்வை நேரம் • OPERATING HOURS
                 </span>
                 <h2 className="text-2xl sm:text-4xl font-black text-white mt-1 tracking-tight">
@@ -954,52 +1014,52 @@ I would like to book an appointment:
                 </h2>
               </div>
 
-              <div className="space-y-3 sm:space-y-4">
-                <div className="bg-[#112538] border border-slate-700/60 rounded-xl sm:rounded-2xl p-4 sm:p-5 flex justify-between items-center">
+              <div className="space-y-2.5 sm:space-y-4">
+                <div className="bg-[#112538] border border-slate-700/60 rounded-xl sm:rounded-2xl p-3.5 sm:p-5 flex justify-between items-center">
                   <div>
                     <p className="text-[9px] sm:text-[10px] font-extrabold text-[#90dcd0] uppercase">காலை • MORNING</p>
-                    <p className="text-lg sm:text-2xl font-black text-white mt-0.5">10:30 AM – 1:30 PM</p>
+                    <p className="text-base sm:text-2xl font-black text-white mt-0.5">10:30 AM – 1:30 PM</p>
                   </div>
-                  <span className="bg-[#0d8a7b]/20 text-[#90dcd0] border border-[#0d8a7b]/40 px-3 py-1 rounded-full text-xs font-bold">
+                  <span className="bg-[#0d8a7b]/20 text-[#90dcd0] border border-[#0d8a7b]/40 px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-bold font-mono">
                     Session 1
                   </span>
                 </div>
 
-                <div className="bg-[#112538] border border-slate-700/60 rounded-xl sm:rounded-2xl p-4 sm:p-5 flex justify-between items-center">
+                <div className="bg-[#112538] border border-slate-700/60 rounded-xl sm:rounded-2xl p-3.5 sm:p-5 flex justify-between items-center">
                   <div>
                     <p className="text-[9px] sm:text-[10px] font-extrabold text-[#90dcd0] uppercase">மாலை • EVENING</p>
-                    <p className="text-lg sm:text-2xl font-black text-white mt-0.5">5:00 PM – 9:00 PM</p>
+                    <p className="text-base sm:text-2xl font-black text-white mt-0.5">5:00 PM – 9:00 PM</p>
                   </div>
-                  <span className="bg-[#0d8a7b]/20 text-[#90dcd0] border border-[#0d8a7b]/40 px-3 py-1 rounded-full text-xs font-bold">
+                  <span className="bg-[#0d8a7b]/20 text-[#90dcd0] border border-[#0d8a7b]/40 px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-bold font-mono">
                     Session 2
                   </span>
                 </div>
               </div>
             </div>
 
-            <div id="contact" className="lg:col-span-5 bg-white text-[#0c1d2d] rounded-2xl sm:rounded-3xl p-5 sm:p-8 shadow-2xl">
+            <div id="contact" className="lg:col-span-5 bg-white text-[#0c1d2d] rounded-2xl sm:rounded-3xl p-4 sm:p-8 shadow-2xl">
               <div>
                 <span className="text-[10px] font-black text-[#0d8a7b] uppercase tracking-widest">
                   GET IN TOUCH
                 </span>
-                <h3 className="text-xl sm:text-2xl font-black mt-1">Hope Dental Clinic</h3>
+                <h3 className="text-lg sm:text-2xl font-black mt-1">Hope Dental Hub</h3>
                 <p className="text-xs text-slate-400 font-medium">
-                  Lead Specialist: Dr. Sinthu Shanmugavel (BDS)
+                  Lead Specialist: Dr. Sindhu Shanmugavel (BDS)
                 </p>
 
-                <div className="mt-5 space-y-3">
-                  <div className="bg-slate-50 border border-slate-100 rounded-xl sm:rounded-2xl p-3.5 flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-lg bg-[#d4eee9] text-[#0d8a7b] flex items-center justify-center font-bold shrink-0">
+                <div className="mt-4 space-y-2.5">
+                  <div className="bg-slate-50 border border-slate-100 rounded-xl sm:rounded-2xl p-3 flex items-center gap-3">
+                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-[#d4eee9] text-[#0d8a7b] flex items-center justify-center font-bold shrink-0">
                       <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.03 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/></svg>
                     </div>
                     <div>
                       <span className="text-[9px] text-slate-400 font-bold uppercase block">Appointments Line</span>
-                      <p className="text-base font-black text-[#0c1d2d]">+91 9043871809</p>
+                      <p className="text-sm sm:text-base font-black text-[#0c1d2d]">+91 {CLINIC_WHATSAPP_NUMBER}</p>
                     </div>
                   </div>
 
-                  <div className="bg-slate-50 border border-slate-100 rounded-xl sm:rounded-2xl p-3.5 flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center font-bold shrink-0">
+                  <div className="bg-slate-50 border border-slate-100 rounded-xl sm:rounded-2xl p-3 flex items-center gap-3">
+                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center font-bold shrink-0">
                       <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
                     </div>
                     <div className="overflow-hidden">
@@ -1012,16 +1072,16 @@ I would like to book an appointment:
                 </div>
               </div>
 
-              <div className="mt-5 grid grid-cols-2 gap-2.5">
+              <div className="mt-4 grid grid-cols-2 gap-2">
                 <a 
-                  href="tel:+919043871809" 
-                  className="bg-[#0d8a7b] hover:bg-[#0a7265] text-white font-bold py-3 px-3 rounded-xl text-xs text-center flex items-center justify-center gap-1.5"
+                  href={`tel:+91${CLINIC_WHATSAPP_NUMBER}`} 
+                  className="bg-[#0d8a7b] hover:bg-[#0a7265] text-white font-bold py-2.5 px-2 rounded-xl text-xs text-center flex items-center justify-center gap-1.5"
                 >
                   Call Clinic
                 </a>
                 <button 
                   onClick={() => setIsLikOpen(true)} 
-                  className="bg-[#0c1d2d] hover:bg-black text-[#90dcd0] font-bold py-3 px-3 rounded-xl text-xs text-center flex items-center justify-center gap-1.5"
+                  className="bg-[#0c1d2d] hover:bg-black text-[#90dcd0] font-bold py-2.5 px-2 rounded-xl text-xs text-center flex items-center justify-center gap-1.5"
                 >
                   Ask AI
                 </button>
@@ -1034,22 +1094,22 @@ I would like to book an appointment:
 
       {/* FOOTER */}
       <footer className="bg-[#06101a] text-slate-400 text-xs py-8 border-t border-[#0c1d2d]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col md:flex-row justify-between items-center gap-5 text-center sm:text-left">
           
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-xl bg-[#0d8a7b] text-white font-bold flex items-center justify-center text-sm shrink-0">
               H
             </div>
             <div>
-              <span className="text-sm font-black text-white block">HOPE DENTAL CLINIC & KIDS HUB</span>
-              <span className="text-[10px] text-slate-400">Dr. Sinthu Shanmugavel (BDS)</span>
+              <span className="text-sm font-black text-white block">HOPE DENTAL HUB</span>
+              <span className="text-[10px] text-slate-400">Dr. Sindhu Shanmugavel (BDS)</span>
             </div>
           </div>
 
           <div className="flex flex-wrap justify-center items-center gap-2">
             <a 
               href="mailto:hopedentalhub@gmail.com" 
-              className="bg-[#112538] hover:bg-amber-600 text-slate-200 hover:text-white px-3 py-2 rounded-xl text-xs font-semibold border border-slate-700/60"
+              className="bg-[#112538] hover:bg-amber-600 text-slate-200 hover:text-white px-3 py-1.5 rounded-xl text-xs font-semibold border border-slate-700/60"
             >
               ✉️ Email
             </a>
@@ -1057,7 +1117,7 @@ I would like to book an appointment:
               href="https://maps.app.goo.gl/28PCTifroYasJ2p16" 
               target="_blank" 
               rel="noreferrer" 
-              className="bg-[#112538] hover:bg-[#0d8a7b] text-slate-200 hover:text-white px-3 py-2 rounded-xl text-xs font-semibold border border-slate-700/60"
+              className="bg-[#112538] hover:bg-[#0d8a7b] text-slate-200 hover:text-white px-3 py-1.5 rounded-xl text-xs font-semibold border border-slate-700/60"
             >
               📍 Maps
             </a>
@@ -1065,14 +1125,14 @@ I would like to book an appointment:
               href="https://www.instagram.com/hopedentalhub?igsh=eThpaHZtZTgwMzZ2" 
               target="_blank" 
               rel="noreferrer" 
-              className="bg-[#112538] hover:bg-pink-600 text-slate-200 hover:text-white px-3 py-2 rounded-xl text-xs font-semibold border border-slate-700/60"
+              className="bg-[#112538] hover:bg-pink-600 text-slate-200 hover:text-white px-3 py-1.5 rounded-xl text-xs font-semibold border border-slate-700/60"
             >
               📸 Instagram
             </a>
           </div>
 
-          <p className="text-[11px] text-slate-500 font-medium">
-            © 2026 Hope Dental Clinic.
+          <p className="text-[11px] text-slate-500 font-medium font-mono">
+            © 2026 Hope Dental Hub.
           </p>
 
         </div>
@@ -1081,7 +1141,7 @@ I would like to book an appointment:
       {/* FLOATING LIK CHATBOT BUTTON */}
       <button 
         onClick={() => setIsLikOpen(!isLikOpen)} 
-        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 bg-[#0c1d2d] text-white p-2.5 sm:px-4 sm:py-3 rounded-full sm:rounded-2xl shadow-2xl border border-[#0d8a7b]/40 flex items-center gap-2 font-bold text-xs hover:scale-105 active:scale-95 transition-all"
+        className="fixed bottom-4 right-3 sm:bottom-6 sm:right-6 z-40 bg-[#0c1d2d] text-white p-2 sm:px-4 sm:py-3 rounded-full sm:rounded-2xl shadow-2xl border border-[#0d8a7b]/40 flex items-center gap-2 font-bold text-xs hover:scale-105 active:scale-95 transition-all"
       >
         <span className="w-7 h-7 rounded-full sm:rounded-lg bg-[#0d8a7b] text-white flex items-center justify-center font-black text-[10px]">
           LIK
@@ -1094,25 +1154,57 @@ I would like to book an appointment:
 
       {/* LIK AI CHAT DRAWER */}
       {isLikOpen && (
-        <div className="fixed bottom-16 right-3 sm:bottom-20 sm:right-6 z-50 w-[calc(100vw-24px)] sm:w-80 md:w-96 max-h-[82vh] h-[460px] bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col">
-          <div className="bg-[#0c1d2d] text-white p-3.5 sm:p-4 flex justify-between items-center shrink-0">
-            <div className="flex items-center gap-2.5">
-              <span className="w-7 h-7 bg-[#0d8a7b] text-white rounded-lg flex items-center justify-center font-black text-xs">
-                LIK
-              </span>
-              <div>
-                <h4 className="font-bold text-xs sm:text-sm leading-tight">LIK AI Assistant</h4>
-                <p className="text-[9px] sm:text-[10px] text-[#90dcd0]">Powered by Gemini AI</p>
+        <div className="fixed bottom-16 inset-x-2 sm:inset-auto sm:bottom-20 sm:right-6 z-50 sm:w-88 md:w-96 max-h-[82vh] h-[490px] bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col">
+          {/* Header & Language Selector */}
+          <div className="bg-[#0c1d2d] text-white p-3 sm:p-4 flex flex-col gap-2 shrink-0">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-2.5">
+                <span className="w-7 h-7 bg-[#0d8a7b] text-white rounded-lg flex items-center justify-center font-black text-xs font-mono shadow-sm">
+                  LIK
+                </span>
+                <div>
+                  <h4 className="font-bold text-xs sm:text-sm leading-tight">LIK AI Assistant</h4>
+                  <p className="text-[10px] text-[#5eead4] font-mono">Live Gemini AI • 4 Languages</p>
+                </div>
               </div>
+              <button 
+                onClick={() => setIsLikOpen(false)} 
+                className="text-slate-400 hover:text-white transition-colors p-1 text-sm font-bold"
+              >
+                ✕
+              </button>
             </div>
-            <button onClick={() => setIsLikOpen(false)} className="text-slate-400 hover:text-white p-1">✕</button>
+
+            {/* 4-Language Quick Selector */}
+            <div className="grid grid-cols-4 gap-1 bg-[#112538] p-1 rounded-xl border border-slate-700/60 text-[10px] sm:text-[11px] font-medium">
+              {[
+                { label: 'English', code: 'English' },
+                { label: 'தமிழ்', code: 'Tamil' },
+                { label: 'മലയാളം', code: 'Malayalam' },
+                { label: 'తెలుగు', code: 'Telugu' },
+              ].map((lang) => (
+                <button
+                  key={lang.code}
+                  type="button"
+                  onClick={() => setSelectedLang(lang.code)}
+                  className={`py-1 rounded-lg text-center transition-all ${
+                    selectedLang === lang.code
+                      ? 'bg-[#0d8a7b] text-white font-bold shadow-sm'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                  }`}
+                >
+                  {lang.label}
+                </button>
+              ))}
+            </div>
           </div>
 
-          <div className="flex-1 p-3.5 sm:p-4 overflow-y-auto space-y-2.5 bg-slate-50 text-xs" id="lik-chat-log">
+          {/* Chat Messages */}
+          <div className="flex-1 p-3 sm:p-4 overflow-y-auto space-y-2.5 bg-slate-50 text-xs" id="lik-chat-log">
             {chatMessages.map((msg, idx) => (
               <div key={idx} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
                 <div 
-                  className={`p-3 rounded-2xl max-w-[85%] leading-relaxed ${
+                  className={`p-3 rounded-2xl max-w-[88%] sm:max-w-[85%] leading-relaxed ${
                     msg.sender === 'user' 
                       ? 'bg-[#0d8a7b] text-white rounded-br-none' 
                       : 'bg-white border border-slate-200 text-slate-800 rounded-bl-none shadow-xs'
@@ -1125,19 +1217,20 @@ I would like to book an appointment:
               <div className="flex justify-start">
                 <div className="p-2.5 rounded-xl bg-white border border-slate-200 text-slate-400 text-xs italic flex items-center gap-1.5 shadow-xs">
                   <span className="w-1.5 h-1.5 bg-[#0d8a7b] rounded-full animate-ping"></span>
-                  LIK is thinking...
+                  LIK is answering in {selectedLang}...
                 </div>
               </div>
             )}
             <div ref={chatEndRef} />
           </div>
 
+          {/* Chat Input */}
           <form onSubmit={handleSendMessage} className="p-2.5 bg-white border-t border-slate-200 flex gap-2 shrink-0">
             <input 
               type="text" 
               value={queryInput} 
               onChange={(e) => setQueryInput(e.target.value)} 
-              placeholder="Ask about treatments, cavities..." 
+              placeholder={`Ask anything in ${selectedLang}...`} 
               className="flex-1 px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-1 focus:ring-[#0d8a7b] bg-slate-50"
             />
             <button type="submit" className="bg-[#0d8a7b] hover:bg-[#0a7265] text-white px-3.5 py-2 rounded-xl text-xs font-bold transition-all shrink-0">
@@ -1152,7 +1245,7 @@ I would like to book an appointment:
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
           <div className="bg-white max-w-lg w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border border-slate-100 relative max-h-[85vh] flex flex-col">
             
-            <div className="relative h-44 sm:h-52 w-full bg-slate-900 shrink-0">
+            <div className="relative h-40 sm:h-52 w-full bg-slate-900 shrink-0">
               <img 
                 src={selectedTreatment.sampleImage} 
                 alt={selectedTreatment.title} 
@@ -1161,26 +1254,26 @@ I would like to book an appointment:
               <div className="absolute inset-0 bg-gradient-to-t from-[#0c1d2d]/90 via-[#0c1d2d]/30 to-transparent"></div>
               
               <button 
-                onClick={() => setSelectedTreatment(null)}
+                onClick={() => setSelectedTreatment(null)} 
                 className="absolute top-3 right-3 bg-black/40 hover:bg-black text-white w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center backdrop-blur-md transition-all text-xs font-bold"
               >
                 ✕
               </button>
 
               <div className="absolute bottom-3 left-4 right-4">
-                <span className="bg-[#0d8a7b] text-white text-[9px] sm:text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                <span className="bg-[#0d8a7b] text-white text-[9px] sm:text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider font-mono">
                   {selectedTreatment.badge}
                 </span>
-                <h3 className="text-lg sm:text-2xl font-black text-white mt-1 leading-tight">
+                <h3 className="text-base sm:text-2xl font-black text-white mt-1 leading-tight">
                   {selectedTreatment.title}
                 </h3>
-                <p className="text-[11px] sm:text-xs font-bold text-[#90dcd0]">{selectedTreatment.tamil}</p>
+                <p className="text-[10px] sm:text-xs font-bold text-[#90dcd0] font-mono">{selectedTreatment.tamil}</p>
               </div>
             </div>
 
-            <div className="p-4 sm:p-6 overflow-y-auto space-y-4 text-slate-600 text-xs sm:text-sm">
+            <div className="p-4 sm:p-6 overflow-y-auto space-y-3.5 text-slate-600 text-xs sm:text-sm">
               <div>
-                <h4 className="text-[11px] font-bold text-[#0c1d2d] uppercase tracking-wider mb-1">
+                <h4 className="text-[11px] font-bold text-[#0c1d2d] uppercase tracking-wider mb-1 font-mono">
                   About This Procedure
                 </h4>
                 <p className="leading-relaxed text-slate-600">
@@ -1188,11 +1281,11 @@ I would like to book an appointment:
                 </p>
               </div>
 
-              <div className="bg-[#f3f9f8] p-3.5 rounded-xl sm:rounded-2xl border border-[#0d8a7b]/20">
-                <h4 className="text-[11px] font-bold text-[#0c1d2d] uppercase tracking-wider mb-2">
+              <div className="bg-[#f3f9f8] p-3 rounded-xl sm:rounded-2xl border border-[#0d8a7b]/20">
+                <h4 className="text-[11px] font-bold text-[#0c1d2d] uppercase tracking-wider mb-1.5 font-mono">
                   Key Highlights & Benefits:
                 </h4>
-                <ul className="space-y-1.5">
+                <ul className="space-y-1">
                   {selectedTreatment.benefits.map((benefit, i) => (
                     <li key={i} className="flex items-center gap-2 text-xs font-semibold text-slate-700">
                       <span className="w-1.5 h-1.5 rounded-full bg-[#0d8a7b] shrink-0"></span>
@@ -1202,14 +1295,14 @@ I would like to book an appointment:
                 </ul>
               </div>
 
-              <div className="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div className="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <button
                   onClick={() => {
                     setFormData(prev => ({ ...prev, treatment: selectedTreatment.title }));
                     setSelectedTreatment(null);
                     setIsModalOpen(true);
                   }}
-                  className="bg-[#0d8a7b] hover:bg-[#0a7265] text-white py-3 rounded-xl text-xs font-bold transition-all text-center"
+                  className="bg-[#0d8a7b] hover:bg-[#0a7265] text-white py-2.5 rounded-xl text-xs font-bold transition-all text-center"
                 >
                   Book This Treatment
                 </button>
@@ -1220,7 +1313,7 @@ I would like to book an appointment:
                     setQueryInput(`Can you tell me more details about ${treatmentName}?`);
                     setIsLikOpen(true);
                   }}
-                  className="bg-[#0c1d2d] hover:bg-black text-[#90dcd0] py-3 rounded-xl text-xs font-bold transition-all text-center"
+                  className="bg-[#0c1d2d] hover:bg-black text-[#90dcd0] py-2.5 rounded-xl text-xs font-bold transition-all text-center font-mono"
                 >
                   💬 Ask AI About This
                 </button>
@@ -1248,7 +1341,7 @@ I would like to book an appointment:
                   <h3 className="text-lg sm:text-xl font-black text-[#0c1d2d]">
                     {activeTab === 'kids' ? "Book Kid's Checkup 🎈" : "Book Your Consultation"}
                   </h3>
-                  <p className="text-xs text-slate-500 mt-0.5">Dr. Sinthu Shanmugavel (BDS) • Hope Dental</p>
+                  <p className="text-xs text-slate-500 mt-0.5">Dr. Sindhu Shanmugavel (BDS) • Hope Dental Hub</p>
                 </div>
 
                 <div className="space-y-2.5 pt-1">
@@ -1301,7 +1394,7 @@ I would like to book an appointment:
 
                 <button 
                   type="submit" 
-                  className={`w-full py-3.5 rounded-xl text-xs sm:text-sm font-bold shadow-md transition-all mt-2 text-white ${
+                  className={`w-full py-3 rounded-xl text-xs sm:text-sm font-bold shadow-md transition-all mt-1 text-white ${
                     activeTab === 'kids' 
                       ? 'bg-gradient-to-r from-amber-500 to-pink-500 hover:from-amber-600 hover:to-pink-600 shadow-pink-500/25' 
                       : 'bg-[#0d8a7b] hover:bg-[#0a7265] shadow-[#0d8a7b]/20'
