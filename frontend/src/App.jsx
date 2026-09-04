@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 
 // --- IMAGE IMPORTS ---
+import clinicLogo from './assets/logo.jpeg';
 import imgGapClosure from './assets/hopedental-results1.png';
 import imgMakeover from './assets/hopedental-results2.png';
 import imgVeneers from './assets/hopedental-results3.png';
@@ -334,7 +335,7 @@ I would like to book an appointment:
               onClick={() => { setActiveTab('main'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
             >
               <img 
-                src={`${import.meta.env.BASE_URL}logo.jpeg`} 
+                src={clinicLogo} 
                 alt="Hope Dental Hub Logo" 
                 className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl object-cover shadow-md shrink-0 border border-slate-200"
               />
@@ -1098,7 +1099,7 @@ I would like to book an appointment:
           
           <div className="flex items-center gap-3">
             <img 
-              src={`${import.meta.env.BASE_URL}logo.jpeg`} 
+              src={clinicLogo} 
               alt="Hope Dental Hub Logo" 
               className="w-8 h-8 rounded-xl object-cover border border-slate-700/60"
             />
