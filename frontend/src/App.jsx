@@ -328,19 +328,19 @@ I would like to book an appointment:
         <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-100 shadow-xs">
           <div className="max-w-7xl mx-auto px-3 sm:px-6 h-16 sm:h-20 flex items-center justify-between gap-1.5 sm:gap-2">
             
-            {/* Brand Logo */}
+            {/* Brand Logo & Name */}
             <div 
               className="flex items-center gap-2 cursor-pointer shrink-0" 
               onClick={() => { setActiveTab('main'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
             >
               <img 
-                src="/logo.jpeg" 
+                src={`${import.meta.env.BASE_URL}logo.jpeg`} 
                 alt="Hope Dental Hub Logo" 
                 className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl object-cover shadow-md shrink-0 border border-slate-200"
               />
               <div>
                 <span className="hover-glitch-text text-xs sm:text-lg font-black tracking-tight text-[#0c1d2d] hover:text-[#0d8a7b] block leading-none font-mono">
-                  HOPE DENTAL
+                  HOPE DENTAL HUB
                 </span>
                 <span className="text-[7px] sm:text-[9px] font-extrabold tracking-widest text-[#0d8a7b] uppercase block mt-0.5">
                   ADULTS & KIDS
@@ -1098,7 +1098,7 @@ I would like to book an appointment:
           
           <div className="flex items-center gap-3">
             <img 
-              src="/logo.jpeg" 
+              src={`${import.meta.env.BASE_URL}logo.jpeg`} 
               alt="Hope Dental Hub Logo" 
               className="w-8 h-8 rounded-xl object-cover border border-slate-700/60"
             />
