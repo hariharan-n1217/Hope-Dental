@@ -385,11 +385,12 @@ I would like to book an appointment:
   };
 
   return (
-    <div className="min-h-screen w-full overflow-x-hidden bg-slate-50 text-[#0c1d2d] font-sans antialiased selection:bg-[#0d8a7b] selection:text-white flex flex-col justify-between">
+    // Fixed mobile top padding (pt-16 for mobile, md:pt-4 for laptop) so top header is never hidden
+    <div className="pt-16 md:pt-4 min-h-screen w-full overflow-x-hidden bg-slate-50 text-[#0c1d2d] font-sans antialiased selection:bg-[#0d8a7b] selection:text-white flex flex-col justify-between">
       
       <div>
         {/* TOP CONTACT & TIMINGS BAR */}
-        <div className="bg-[#0c1d2d] text-slate-200 text-xs py-2 px-3 sm:px-6 border-b border-[#112538]">
+        <div className="bg-[#0c1d2d] text-slate-200 text-xs py-2 px-3 sm:px-6 border-b border-[#112538] fixed top-0 left-0 w-full z-40">
           <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-1 text-center sm:text-left">
             <div className="flex flex-wrap items-center justify-center sm:justify-start gap-1.5 text-[11px] sm:text-xs">
               <span className="w-2 h-2 rounded-full bg-[#0d8a7b] animate-ping"></span>
@@ -405,8 +406,8 @@ I would like to book an appointment:
           </div>
         </div>
 
-        {/* ALWAYS STICKY NAVBAR UNTIL THE VERY BOTTOM */}
-        <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-100 shadow-sm transition-all">
+        {/* ALWAYS STICKY NAVBAR */}
+        <header className="sticky top-8 sm:top-9 z-40 bg-white/95 backdrop-blur-md border-b border-slate-100 shadow-sm transition-all">
           <div className="max-w-7xl mx-auto px-3 sm:px-6 h-16 sm:h-20 flex items-center justify-between gap-2">
             
             {/* Logo & Brand Name */}
@@ -709,13 +710,13 @@ I would like to book an appointment:
           </main>
         ) : (
           /* ==================================================== */
-          /* MAIN CLINIC: SINGLE COMPACT BUBBLE + MAX REAL VIEW   */
+          /* MAIN CLINIC                                          */
           /* ==================================================== */
           <main className="w-full">
             
             <section className="relative min-h-[620px] sm:min-h-[680px] lg:min-h-[720px] flex items-center overflow-hidden border-b border-slate-200">
               
-              {/* UNBLURRED, HIGH-RES REAL CLINIC BACKGROUND CAROUSEL */}
+              {/* HIGH-RES REAL CLINIC BACKGROUND CAROUSEL */}
               <div className="absolute inset-0 z-0 bg-slate-950">
                 {heroBackgrounds.map((slide, idx) => (
                   <div
@@ -731,26 +732,21 @@ I would like to book an appointment:
                     />
                   </div>
                 ))}
-
-                {/* Gentle cinema vignette so colors remain 100% authentic */}
                 <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-black/35"></div>
               </div>
 
-              {/* FOREGROUND HERO: SINGLE SLEEK BUBBLE (70% OF SCREEN OPEN FOR REAL PHOTOS) */}
+              {/* FOREGROUND HERO */}
               <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-16 w-full flex flex-col justify-between min-h-[580px] sm:min-h-[620px]">
                 
                 <div className="grid lg:grid-cols-12 items-center">
                   
-                  {/* Single Sleek Frosted Glass Capsule */}
                   <div className="lg:col-span-8 ios-glass-bubble p-6 sm:p-9 rounded-[32px] sm:rounded-[38px] space-y-4 sm:space-y-5 text-center lg:text-left transition-all duration-300">
                     
-                    {/* iOS Pill Badge */}
                     <div className="inline-flex items-center gap-2 border border-white/80 bg-white/40 text-[#09594f] text-[10px] sm:text-xs font-mono font-black px-3.5 py-1.5 rounded-full shadow-xs">
                       <span className="w-2 h-2 rounded-full bg-[#0d8a7b] animate-ping"></span>
                       <span>● CLINICAL EXCELLENCE • YEAR 4 • POLLACHI</span>
                     </div>
 
-                    {/* Headline */}
                     <div className="min-h-[65px] sm:min-h-[100px] flex flex-col justify-center">
                       <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black text-[#0c1d2d] tracking-tight leading-[1.2] font-mono">
                         <span className="text-slate-600 block text-base sm:text-xl lg:text-2xl font-sans tracking-normal font-semibold mb-1">
@@ -763,12 +759,10 @@ I would like to book an appointment:
                       </h1>
                     </div>
 
-                    {/* Description */}
                     <p className="text-slate-800 text-xs sm:text-sm lg:text-base leading-relaxed max-w-xl mx-auto lg:mx-0 font-medium">
                       Pollachi’s modern multi-specialty dental destination under <strong>Dr. Sindhu Shanmugavel (BDS)</strong>. Advanced, painless, state-of-the-art care for the whole family.
                     </p>
 
-                    {/* CTAs: iPhone Translucent Buttons */}
                     <div className="pt-1 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-center lg:justify-start">
                       <a 
                         href={`tel:+91${CLINIC_WHATSAPP_NUMBER}`}
@@ -790,7 +784,6 @@ I would like to book an appointment:
                       </button>
                     </div>
 
-                    {/* Stats inside Frosted Bubbles */}
                     <div className="pt-3 border-t border-white/60 grid grid-cols-3 gap-2 sm:gap-4 max-w-md mx-auto lg:mx-0 text-[#0c1d2d]">
                       <div className="ios-sub-bubble p-2.5 rounded-2xl text-center">
                         <p className="text-base sm:text-xl font-black font-mono text-[#0d8a7b]">3+ Yrs</p>
@@ -807,11 +800,9 @@ I would like to book an appointment:
                     </div>
                   </div>
 
-                  {/* Empty Right Column: Allows full view of clinic interior & signboard */}
                   <div className="hidden lg:block lg:col-span-4"></div>
                 </div>
 
-                {/* Floating Bottom Photo Carousel Capsule: Shows current scene & slide ticks */}
                 <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-3 ios-glass-bubble py-2.5 px-5 rounded-2xl max-w-lg">
                   <div className="flex items-center gap-2 text-xs font-bold text-slate-800">
                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -835,7 +826,7 @@ I would like to book an appointment:
               </div>
             </section>
 
-            {/* 2. MAIN TREATMENTS CATALOG */}
+            {/* TREATMENTS CATALOG */}
             <section id="treatments" className="py-14 sm:py-20 bg-slate-50/70">
               <div className="max-w-7xl mx-auto px-4 sm:px-6">
                 <div className="reveal-box text-center max-w-2xl mx-auto mb-10 sm:mb-14" style={{ transitionDelay: '0.1s' }}>
@@ -859,7 +850,6 @@ I would like to book an appointment:
                       className="reveal-box group bg-white rounded-3xl overflow-hidden border border-slate-200 hover:border-[#0d8a7b] hover:shadow-2xl hover:shadow-[#0d8a7b]/15 transition-all duration-300 hover:-translate-y-2 cursor-pointer flex flex-col justify-between"
                     >
                       <div>
-                        {/* Treatment Preview Photo */}
                         <div className="relative h-44 sm:h-52 w-full bg-slate-100 overflow-hidden">
                           <img 
                             src={item.sampleImage} 
@@ -896,7 +886,7 @@ I would like to book an appointment:
               </div>
             </section>
 
-            {/* 3. SMILE RESULTS BEFORE & AFTER */}
+            {/* SMILE RESULTS */}
             <section id="transformations" className="py-14 sm:py-20 bg-white border-t border-slate-100">
               <div className="max-w-7xl mx-auto px-4 sm:px-6">
                 <div className="reveal-box text-center max-w-2xl mx-auto mb-10 sm:mb-14" style={{ transitionDelay: '0.1s' }}>
@@ -909,7 +899,6 @@ I would like to book an appointment:
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {/* Result 1 */}
                   <div className="reveal-box group bg-slate-50/60 rounded-3xl p-5 border border-slate-200 hover:border-[#0d8a7b]/50 hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5" style={{ transitionDelay: '0.15s' }}>
                     <div className="relative h-44 sm:h-52 rounded-2xl overflow-hidden bg-slate-100">
                       <img src={imgGapClosure} alt="Gap Closure Results" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -922,7 +911,6 @@ I would like to book an appointment:
                     </div>
                   </div>
 
-                  {/* Result 2 */}
                   <div className="reveal-box group bg-slate-50/60 rounded-3xl p-5 border border-slate-200 hover:border-[#0d8a7b]/50 hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5" style={{ transitionDelay: '0.3s' }}>
                     <div className="relative h-44 sm:h-52 rounded-2xl overflow-hidden bg-slate-100">
                       <img src={imgVeneers} alt="Restoration Results" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -935,7 +923,6 @@ I would like to book an appointment:
                     </div>
                   </div>
 
-                  {/* Result 3 */}
                   <div className="reveal-box group bg-slate-50/60 rounded-3xl p-5 border border-slate-200 hover:border-[#0d8a7b]/50 hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5" style={{ transitionDelay: '0.45s' }}>
                     <div className="relative h-44 sm:h-52 rounded-2xl overflow-hidden bg-slate-100">
                       <img src={imgMakeover} alt="Smile Makeover Results" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -951,7 +938,7 @@ I would like to book an appointment:
               </div>
             </section>
 
-            {/* 4. ABOUT THE DOCTOR & CLINIC (Doctor card integrated here) */}
+            {/* ABOUT DOCTOR */}
             <section id="about" className="py-14 sm:py-20 bg-slate-50/70 border-t border-slate-100">
               <div className="max-w-7xl mx-auto px-4 sm:px-6">
                 <div className="reveal-box text-center max-w-2xl mx-auto mb-10 sm:mb-14" style={{ transitionDelay: '0.1s' }}>
@@ -964,8 +951,6 @@ I would like to book an appointment:
                 </div>
 
                 <div className="grid lg:grid-cols-12 gap-6 items-stretch">
-                  
-                  {/* Doctor Profile Card (Integrated here neatly) */}
                   <div className="reveal-box lg:col-span-5 bg-white rounded-3xl p-6 sm:p-8 border border-teal-200 shadow-xl shadow-teal-500/10 flex flex-col justify-between text-[#0c1d2d]" style={{ transitionDelay: '0.2s' }}>
                     <div>
                       <div className="flex items-center gap-3.5">
@@ -1011,7 +996,6 @@ I would like to book an appointment:
                     </div>
                   </div>
 
-                  {/* 4 Clinic Excellence Pillars */}
                   <div className="lg:col-span-7 grid sm:grid-cols-2 gap-4">
                     <div className="reveal-box bg-white rounded-3xl p-5 border border-slate-200 shadow-xs hover:border-[#0d8a7b]/40 transition-all" style={{ transitionDelay: '0.15s' }}>
                       <span className="text-xs font-black text-[#0d8a7b] bg-teal-50 px-2.5 py-1 rounded-lg">01</span>
@@ -1042,14 +1026,11 @@ I would like to book an appointment:
         )}
       </div>
 
-      {/* ======================================================== */}
-      {/* 5. FREQUENTLY ASKED QUESTIONS (Dr. Agarwals Theme)       */}
-      {/* ======================================================== */}
+      {/* FREQUENTLY ASKED QUESTIONS */}
       <section id="faq" className="py-14 sm:py-20 bg-[#eef8f6] border-t border-teal-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-start">
             
-            {/* Left Column: Impressing Points & Headings */}
             <div className="lg:col-span-4 space-y-4">
               <span className="text-[10px] sm:text-[11px] font-extrabold text-[#0d8a7b] tracking-widest uppercase bg-white px-3 py-1 rounded-full border border-teal-200 shadow-xs">
                 PATIENT ASSISTANCE
@@ -1067,7 +1048,6 @@ I would like to book an appointment:
                 }
               </p>
 
-              {/* Impressing Value Badge */}
               <div className="bg-white p-4 rounded-2xl border border-teal-200/80 shadow-xs space-y-2 mt-4">
                 <p className="text-xs font-bold text-[#0c1d2d]">Have a specific query?</p>
                 <p className="text-[11px] text-slate-500">Ask our 24/7 AI Dental Assistant LIK or talk directly to our clinic desk.</p>
@@ -1088,7 +1068,6 @@ I would like to book an appointment:
               </div>
             </div>
 
-            {/* Right Column: Clean White Accordion Question Bars */}
             <div className="lg:col-span-8 space-y-3">
               {currentFaqs.map((faq, index) => {
                 const isOpen = openFaqIndex === index;
@@ -1125,7 +1104,7 @@ I would like to book an appointment:
         </div>
       </section>
 
-      {/* 6. OPERATING HOURS & CONTACT */}
+      {/* OPERATING HOURS & CONTACT */}
       <section id="hours" className="py-12 sm:py-20 bg-[#0c1d2d] text-white border-t border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid lg:grid-cols-12 gap-6 lg:gap-10 items-center">
@@ -1228,12 +1207,11 @@ I would like to book an appointment:
         </div>
       </button>
 
-      {/* 60% IMAGE + 40% CONCISE SHORT SUMMARY TREATMENT MODAL */}
+      {/* TREATMENT MODAL */}
       {selectedTreatment && (
         <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-300">
           <div className="bg-white max-w-2xl w-full rounded-3xl overflow-hidden shadow-2xl border border-slate-100 relative max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-300">
             
-            {/* 60% Height Big Image View */}
             <div className="relative h-64 sm:h-80 w-full bg-slate-900 shrink-0 overflow-hidden">
               <img 
                 src={selectedTreatment.sampleImage} 
@@ -1260,7 +1238,6 @@ I would like to book an appointment:
               </div>
             </div>
 
-            {/* 40% Concise Short Summary */}
             <div className="p-4 sm:p-5 overflow-y-auto space-y-3 bg-white text-xs sm:text-sm">
               <p className="text-slate-600 leading-relaxed">
                 {selectedTreatment.fullDesc}
@@ -1306,9 +1283,9 @@ I would like to book an appointment:
         </div>
       )}
 
-      {/* LIK AI CHAT DRAWER */}
+      {/* LIK AI CHAT DRAWER / KEYBOARD OVERFLOW & DVH FIXED */}
       {isLikOpen && (
-        <div className="fixed inset-x-2 bottom-2 top-14 sm:top-auto sm:inset-x-auto sm:bottom-20 sm:right-6 z-50 sm:w-88 md:w-96 sm:h-[500px] bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col animate-in slide-in-from-bottom-5 duration-300">
+        <div className="fixed inset-x-2 bottom-2 top-14 sm:top-auto sm:inset-x-auto sm:bottom-20 sm:right-6 z-50 sm:w-88 md:w-96 h-[85dvh] sm:h-[500px] bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col animate-in slide-in-from-bottom-5 duration-300">
           <div className="bg-[#0c1d2d] text-white p-3.5 flex flex-col gap-2 shrink-0">
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-2">
