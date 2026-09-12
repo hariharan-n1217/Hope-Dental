@@ -790,7 +790,7 @@ I would like to book an appointment:
                         <p className="text-[9px] sm:text-xs text-slate-700 font-bold mt-0.5">Trusted Clinic</p>
                       </div>
                       <div className="ios-sub-bubble p-2.5 rounded-2xl text-center">
-                        <p className="text-base sm:text-xl font-black font-mono text-[#0d8a7b]">12+</p>
+                        <p className="text-base sm:text-xl font-black font-mono text-[#0d8a7b]">1000+</p>
                         <p className="text-[9px] sm:text-xs text-slate-700 font-bold mt-0.5">Treatments</p>
                       </div>
                       <div className="ios-sub-bubble p-2.5 rounded-2xl text-center">
